@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Shop</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Link to Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!--===============================================================================================-->
+  <link rel="icon" type="image/png" href="images/icons/favicon.png" />
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="fonts/linearicons-v1.0.0/icon-font.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/slick/slick.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/MagnificPopup/magnific-popup.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" type="text/css" href="css/util.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <!--===============================================================================================-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    /* The Modal (background) */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      padding-top: 50px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+
+    /* Modal Content (image) */
+    .modal img {
+      display: block;
+      margin: 0 auto;
+      max-width: 80%;
+      max-height: 80%;
+    }
+
+    /* Zoomed Image */
+    .image-zoom {
+      overflow: hidden;
+      width: 120%;
+      height: 105%;
+    }
+
+    .image-zoom img {
+      transform: scale(1);
+      transition: transform 0.3s ease;
+      /* Add a smooth transition */
+      cursor: pointer;
+      /* Change cursor to indicate clickability */
+      margin-left: 26%;
+    }
+
+    /* Zoomed-in style on click */
+    .image-zoom img.zoomed {
+      transform: scale(1.2);
+      /* Adjust the scale factor as needed */
+    }
+
+    /* Close Button */
+    .close-button {
+      background-color: #4d4d4d;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      height: 45px;
+      width: 43px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      z-index: 10001;
+    }
+
+    @media (min-width: 992px) {
+      .profile-picture {
+        max-width: 200px;
+        max-height: 200px;
+        margin-left: -55px;
+      }
+
+      .mainSec {
+        margin-top: -70px;
+      }
+    }
+
+    @media (max-width:500px) {
+      .profile-picture {
+        margin-top: -80px;
+      }
+
+      .profile-picture {
+        max-width: 280px;
+        max-height: 280px;
+      }
+    }
+  </style>
+</head>
+
+<body class="animsition">
+
+  <!-- Header -->
+  <header class="header-v4">
+    <!-- Header desktop -->
+    <div class="container-menu-desktop" style="height: 84px;">
+
+      <div class="wrap-menu-desktop how-shadow1" style="top: 0px;">
+        <nav class="limiter-menu-desktop container">
+
+          <!-- Logo desktop -->
+          <a href="/home" class="logo">
+            <img src="images/icons/logo-01.png" alt="IMG-LOGO">
+          </a>
+
+          <!-- Menu desktop -->
+          <div class="menu-desktop">
+            <ul class="main-menu">
+              <li>
+                <a href="/home">Home</a>
+              </li>
+
+              <li>
+                <a href="/shop">Shop</a>
+              </li>
+
+              <li>
+                <a href="/about">About</a>
+              </li>
+
+              <li>
+                <a href="/contact">Contact</a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Icon header -->
+          <div class="wrap-icon-header flex-w flex-r-m">
+            <a href="/shopingCart" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0">
+              <i class="zmdi zmdi-shopping-cart"></i>
+            </a>
+
+            <a href="/wishlist" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0">
+              <i class="zmdi zmdi-favorite-outline"></i>
+            </a>
+
+            <!-- <a href="/profile" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0">
+							<i class="fa-solid fa-user" style="color: #000000;"></i>
+						</a> -->
+
+            <% if(!user) { %>
+            <a href="/login" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0">
+              <span style="font-size: 20px;">Login</span>
+            </a>
+            <% } else { %>
+
+            <a href="/profile" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11" data-notify="0">
+              <i class="fa-solid fa-user" style="color: #474747;"></i>
+            </a>
+
+            <% } %>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Header Mobile -->
+    <div class="wrap-header-mobile">
+      <!-- Logo moblie -->
+      <div class="logo-mobile">
+        <a href="/home"><img src="images/icons/logo-01.png" alt="IMG-LOGO"></a>
+      </div>
+
+      <!-- Icon header -->
+      <div class="wrap-icon-header flex-w flex-r-m m-r-15">
+        <div class="icon-header-item cl2 hov-cl1 trans-04 p-r-11 js-show-modal-search">
+          <i class="zmdi zmdi-search"></i>
+        </div>
+
+        <a href="/shopingCart" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10" data-notify="0">
+          <i class="zmdi zmdi-shopping-cart"></i>
+        </a>
+
+        <a href="/wishlist" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-r-11 p-l-10" data-notify="0">
+          <i class="zmdi zmdi-favorite-outline"></i>
+        </a>
+      </div>
+
+      <!-- Button show menu -->
+      <div class="btn-show-menu-mobile hamburger hamburger--squeeze">
+        <span class="hamburger-box">
+          <span class="hamburger-inner"></span>
+        </span>
+      </div>
+    </div>
+
+
+    <!-- Menu Mobile -->
+    <div class="menu-mobile">
+
+      <ul class="main-menu-m">
+        <li>
+          <a href="/home">Home</a>
+        </li>
+
+        <li>
+          <a href="/shop">Shop</a>
+        </li>
+
+        <li>
+          <a href="/about">About</a>
+        </li>
+
+        <li>
+          <a href="/contact">Contact</a>
+        </li>
+
+        <li>
+          <a href="/profile">Profile</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Modal Search -->
+    <div class="modal-search-header flex-c-m trans-04 js-hide-modal-search">
+      <div class="container-search-header">
+        <button class="flex-c-m btn-hide-modal-search trans-04 js-hide-modal-search">
+          <img src="images/icons/icon-close2.png" alt="CLOSE">
+        </button>
+
+        <form class="wrap-search-header flex-w p-l-15">
+          <button class="flex-c-m trans-04">
+            <i class="zmdi zmdi-search"></i>
+          </button>
+          <input class="plh3" type="text" name="search" placeholder="Search...">
+        </form>
+      </div>
+    </div>
+  </header>

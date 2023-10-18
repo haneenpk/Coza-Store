@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup Form</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Google Fonts - Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .box {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      max-width: 400px;
+      margin: 0 auto;
+      margin-top: 50px;
+    }
+
+    h3 {
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 500;
+    }
+
+    .login-btn {
+      background-color: #007BFF;
+      color: #fff;
+      font-weight: 600;
+      border: none;
+    }
+
+    .login-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 box">
+        <form action="/signup" method="post" onsubmit="return validateForm()">
+          <h3 class="text-center">Sign Up</h3>
+
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" placeholder="Enter Username" name="username">
+            <span id="usernameError" class="text-danger"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" placeholder="Enter Email" name="email">
+            <span id="emailError" class="text-danger"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="mobile">Mobile No:</label>
+            <input type="text" class="form-control" placeholder="Enter Mobile" name="mobile" id="mobile">
+            <span id="mobileError" class="text-danger"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-group">
+              <input type="password" class="form-control" placeholder="Enter Password" name="password" id="password">
+              <div class="input-group-append">
+                <span class="input-group-text">
+                  <i class="far fa-eye" onclick="togglePassword('password')"></i>
+                </span>
+              </div>
+            </div>
+            <span id="passwordError" class="text-danger"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-group">
+              <input type="password" class="form-control" placeholder="Confirm Password" name="confirmPassword" id="confirmPassword">
+              <div class="input-group-append">
+                <span class="input-group-text">
+                  <i class="far fa-eye" onclick="togglePassword('confirmPassword')"></i>
+                </span>
+              </div>
+            </div>
+            <span id="confirmPasswordError" class="text-danger"></span>
+          </div>
+
+          <button class="btn btn-primary btn-block login-btn" type="submit">Submit</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 8px;"><a href="/login">Back to Login</a></div>
+        <div style="padding-top: 5px; text-align: center;">
+          <% if(typeof message !== "undefined") { %>
+          <span style="color:#61ff61; font-weight: bold;"><%= message %></span>
+          <% } %>
+          <% if(typeof error !== "undefined") { %>
+          <span style="color: #c00; font-weight: bold;"><%= error %></span>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- JavaScript for Show/Hide Password -->
+  <script>
+    function togglePassword(id) {
+      var passwordField = document.getElementById(id);
+      var icon = passwordField.nextElementSibling.querySelector("i");
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        icon.classList.remove("far", "fa-eye");
+        icon.classList.add("far", "fa-eye-slash");
+      } else {
+        passwordField.type = "password";
+        icon.classList.remove("far", "fa-eye-slash");
+        icon.classList.add("far", "fa-eye");
+      }
+    }
+
+    function validateForm() {
+      var username = document.querySelector('input[name="username"]').value;
+      var email = document.querySelector('input[name="email"]').value;
+      var mobile = document.querySelector('#mobile').value;
+      var password = document.querySelector('#password').value;
+      var confirmPassword = document.querySelector('#confirmPassword').value;
+      var usernameError = document.querySelector('#usernameError');
+      var emailError = document.querySelector('#emailError');
+      var mobileError = document.querySelector('#mobileError');
+      var passwordError = document.querySelector('#passwordError');
+      var confirmPasswordError = document.querySelector('#confirmPasswordError');
+      var valid = true;
+
+      // Username Validation
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        usernameError.innerHTML = "Username can only contain letters, numbers, and underscores.";
+        valid = false;
+      } else {
+        usernameError.innerHTML = "";
+      }
+
+      // Email Validation
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        emailError.innerHTML = "Invalid email address.";
+        valid = false;
+      } else {
+        emailError.innerHTML = "";
+      }
+
+      // Mobile Number Validation
+      if (!/^\d{10}$/.test(mobile)) {
+        mobileError.innerHTML = "Mobile number should be 10 digits.";
+        valid = false;
+      } else {
+        mobileError.innerHTML = "";
+      }
+
+      // Mobile Number Validation
+      if (!/^\d{10}$/.test(mobile) || /^(.)\1{9}$/.test(mobile)) {
+        mobileError.innerHTML = "Mobile number should be 10 digits with at least one digit being different.";
+        valid = false;
+      } else {
+        mobileError.innerHTML = "";
+      }
+
+      // Password Validation
+      if (!/^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/.test(password)) {
+        passwordError.innerHTML = "Password should be at least 8 characters with a number and symbol.";
+        valid = false;
+      } else {
+        passwordError.innerHTML = "";
+      }
+
+      // Confirm Password Validation
+      if (confirmPassword !== password) {
+        confirmPasswordError.innerHTML = "Passwords do not match.";
+        valid = false;
+      } else {
+        confirmPasswordError.innerHTML = "";
+      }
+
+      return valid;
+    }
+  </script>
+</body>
+
+</html>

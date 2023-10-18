@@ -1,0 +1,298 @@
+<%- include('../partials/userHeader') %>
+
+<!-- Content page -->
+<section class="bg0 p-t-75 p-b-120 mainSec">
+  <div class="container">
+    <main class="container mt-4">
+      <section class="profile">
+        <div class="row">
+          <div class="col-md-4 text-center">
+            <% if (userProfile.profile) { %>
+            <img src="<%= userProfile.profile  %>" alt="User Profile Picture" class="img-fluid rounded-circle profile-picture">
+            <div class="row mb-3" style="margin-top: 10px;">
+              <div class="col-sm-10">
+                <div class="d-flex justify-content-center">
+                  <a href="/profile/deletePhoto" class="btn btn-danger profile-button">Remove profile</a>
+                </div>
+                <% } else { %>
+                <img src="images/defaultProfile.webp" alt="User Profile Picture" class="img-fluid rounded-circle profile-picture">
+                <div class="row mb-3" style="margin-top: 10px;">
+                  <div class="col-sm-10">
+                    <% } %>
+                    <label class="col-form-label" for="profile-picture" style="margin-top: 20px;">Change Profile</label>
+                    <form action="/profile/editPhoto?_method=PATCH" method="post" enctype="multipart/form-data">
+                      <input type="file" accept="image/*" name="image" class="form-control file-upload-info" placeholder="Upload Image" id="preview-input" />
+                      <button type="submit" class="btn btn-primary profile-button" style="margin-top: 15px;">Update profile</button><br>
+                    </form>
+                    <% 
+										if(typeof error !== "undefined"){
+										   %>
+                    <div style="margin-top: 8px;">
+                      <span style="color:#f00; font-weight: bold;"><%= error %></span>
+                    </div>
+                    <%
+										 }
+										%>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-8" style="margin-top: 10px;">
+                <h1 class="profile-name"><%= userProfile.username %></h1>
+                <p class="profile-email mt-2">Email: <%= userProfile.email %></p>
+                <p class="profile-mobile mt-2">Mobile: <%= userProfile.mobile %></p>
+                <div style="margin-top: 8px;">
+                  <a href="/change-password">Change Password</a>
+                </div>
+                <!-- Add other user information here -->
+                <div style="margin-top: 10px;">
+                  <a href="/edit-profile?id=<%= userProfile._id %>" class="btn btn-primary profile-button" id="edit-profile-button">Edit Profile</a>
+                  <a href="/logout" class="btn btn-danger profile-button" id="logout-button">Logout</a> <!-- Logout button -->
+                </div>
+                <div style="margin-top: 10px;">
+                  <a href="/order" class="btn btn-primary profile-button" id="edit-profile-button">My Orders</a>
+                  <a href="/wallet" class="btn btn-primary profile-button" id="edit-profile-button">My Wallet</a>
+                  <a href="/coupons" class="btn btn-primary profile-button" id="edit-profile-button">Coupons</a>
+                </div>
+                <section class="bg-light p-4" style="margin-top: 20px;">
+                  <h2 class="mb-4">Addresses</h2>
+                  <div class="row">
+                    <!-- Add Address Button -->
+                    <div class="col-md-12 ">
+                      <a href="/add-address" class="btn btn-success" id="add-address-button">Add Address</a>
+                    </div>
+              <%
+              if (userAddress.length > 0) {
+               for (let i = 0; i < userAddress.length; i++) {
+              %>
+                    <div class="col-md-6 mb-4 mt-4">
+                      <div class="card">
+                        <div class="card-body">
+                          <h5 class="card-title">Address <%= i+1 %></h5>
+                          <p class="card-text"><%= userAddress[i].name %>, <%= userAddress[i].district %>, <%= userAddress[i].state %>, <%= userAddress[i].country %></p>
+                          <a href="/edit-address?id=<%= userAddress[i]._id %>" class="btn btn-primary btn-sm">Edit</a>
+                          <a href="/delete-address?id=<%= userAddress[i]._id %>" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                      </div>
+                    </div>
+              <%
+			          }
+		          } else {
+              %>
+
+                    <div style="margin-top: 20px;">
+                      <h4>You are not added address</h4>
+                    </div>
+
+                    <% } %>
+
+                    <!-- Add more addresses here... -->
+                  </div>
+                </section>
+
+              </div>
+            </div>
+      </section>
+
+
+    </main>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="bg3 p-t-75 p-b-32">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-lg-3 p-b-50">
+        <h4 class="stext-301 cl0 p-b-30">
+          Categories
+        </h4>
+
+        <ul>
+          <li class="p-b-10">
+            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+              Women
+            </a>
+          </li>
+
+          <li class="p-b-10">
+            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+              Men
+            </a>
+          </li>
+
+          <li class="p-b-10">
+            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+              Shoes
+            </a>
+          </li>
+
+          <li class="p-b-10">
+            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+              Watches
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-sm-6 col-lg-3 p-b-50">
+        <h4 class="stext-301 cl0 p-b-30">
+          Help
+        </h4>
+
+        <ul>
+          <li class="p-b-10">
+            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+              Track Order
+            </a>
+          </li>
+
+          <li class="p-b-10">
+            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+              Returns
+            </a>
+          </li>
+
+          <li class="p-b-10">
+            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+              Shipping
+            </a>
+          </li>
+
+          <li class="p-b-10">
+            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+              FAQs
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-sm-6 col-lg-3 p-b-50">
+        <h4 class="stext-301 cl0 p-b-30">
+          GET IN TOUCH
+        </h4>
+
+        <p class="stext-107 cl7 size-201">
+          Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879
+        </p>
+
+        <div class="p-t-27">
+          <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+            <i class="fa fa-facebook"></i>
+          </a>
+
+          <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+            <i class="fa fa-instagram"></i>
+          </a>
+
+          <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+            <i class="fa fa-pinterest-p"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3 p-b-50">
+        <h4 class="stext-301 cl0 p-b-30">
+          Newsletter
+        </h4>
+
+        <form>
+          <div class="wrap-input1 w-full p-b-4">
+            <input class="input1 bg-none plh1 stext-107 cl7" type="text" name="email" placeholder="email@example.com">
+            <div class="focus-input1 trans-04"></div>
+          </div>
+
+          <div class="p-t-18">
+            <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
+              Subscribe
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="p-t-40">
+      <div class="flex-c-m flex-w p-b-18">
+        <a href="#" class="m-all-1">
+          <img src="images/icons/icon-pay-01.png" alt="ICON-PAY">
+        </a>
+
+        <a href="#" class="m-all-1">
+          <img src="images/icons/icon-pay-02.png" alt="ICON-PAY">
+        </a>
+
+        <a href="#" class="m-all-1">
+          <img src="images/icons/icon-pay-03.png" alt="ICON-PAY">
+        </a>
+
+        <a href="#" class="m-all-1">
+          <img src="images/icons/icon-pay-04.png" alt="ICON-PAY">
+        </a>
+
+        <a href="#" class="m-all-1">
+          <img src="images/icons/icon-pay-05.png" alt="ICON-PAY">
+        </a>
+      </div>
+
+      <p class="stext-107 cl6 txt-center">
+        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+        Copyright &copy;<script>
+          document.write(new Date().getFullYear());
+        </script> All rights reserved | Made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> &amp; distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+
+      </p>
+    </div>
+  </div>
+</footer>
+
+
+<!-- Back to top -->
+<div class="btn-back-to-top" id="myBtn">
+  <span class="symbol-btn-back-to-top">
+    <i class="zmdi zmdi-chevron-up"></i>
+  </span>
+</div>
+
+<!--===============================================================================================-->
+<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+<script src="vendor/bootstrap/js/popper.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+<script src="vendor/select2/select2.min.js"></script>
+<script>
+  $(".js-select2").each(function() {
+    $(this).select2({
+      minimumResultsForSearch: 20,
+      dropdownParent: $(this).next('.dropDownSelect2')
+    });
+  })
+</script>
+<!--===============================================================================================-->
+<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+<!--===============================================================================================-->
+<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<script>
+  $('.js-pscroll').each(function() {
+    $(this).css('position', 'relative');
+    $(this).css('overflow', 'hidden');
+    var ps = new PerfectScrollbar(this, {
+      wheelSpeed: 1,
+      scrollingThreshold: 1000,
+      wheelPropagation: false,
+    });
+
+    $(window).on('resize', function() {
+      ps.update();
+    })
+  });
+</script>
+<!--===============================================================================================-->
+<script src="js/main.js"></script>
+
+</body>
+
+</html>
