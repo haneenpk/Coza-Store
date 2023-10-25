@@ -13,8 +13,7 @@ const middlewareProduct = async (req, res, next) => {
         res.locals.brands = brands;
         next();
     } catch (error) {
-        console.log(error.message);
-        next(error);
+        res.render("error/internalError", { error })
     }
 }
 
@@ -55,7 +54,7 @@ const loadProduct = async (req, res) => {
             currentPage: page,
         });
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -71,7 +70,7 @@ const loadAddProduct = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -120,7 +119,7 @@ const AddProduct = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -134,7 +133,7 @@ const deleteProduct = async (req, res) => {
         res.redirect("/admin/product")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -155,7 +154,7 @@ const loadEditProduct = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -173,7 +172,7 @@ const destroyProductImage = async (req, res) => {
         res.redirect(`/admin/edit-product?id=${id}`)
 
     } catch (error) {
-        console.log(error);
+        res.render("error/internalError", { error })
     }
 }
 
@@ -188,7 +187,7 @@ const updateProductImages = async (req, res) => {
         await Product.findByIdAndUpdate(id, { $push: { images: imagesWithPath } }, { new: true })
         res.redirect(`/admin/edit-product?id=${id}`)
     } catch (error) {
-        console.log(error.message)
+        res.render("error/internalError", { error })
     }
 }
 
@@ -201,7 +200,7 @@ const EditProduct = async (req, res) => {
         res.redirect("/admin/product")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }

@@ -14,7 +14,7 @@ const loadProfile = async (req, res) => {
         res.render("users/profile", { user: req.session.user_id, userProfile, userAddress })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -28,7 +28,7 @@ const loadEditProfile = async (req, res) => {
         res.render("users/edit-profile", { user: req.session.user_id, userProfile })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -41,7 +41,7 @@ const updateProfilePhoto = async (req, res) => {
 
         res.redirect("/profile")
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -54,7 +54,7 @@ const deleteProfilePhoto = async (req, res) => {
 
         res.redirect("/profile")
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -106,7 +106,7 @@ const EditProfile = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -120,7 +120,7 @@ const loadChangePass = async (req, res) => {
         res.render("users/change-passUser", { user: req.session.user_id, userProfile })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -148,7 +148,7 @@ const ChangePass = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -160,7 +160,7 @@ const loadAddAddress = async (req, res) => {
         res.render("users/addAdress", { user: req.session.user_id })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -192,7 +192,7 @@ const AddAddress = async (req, res) => {
         res.redirect("/profile")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -218,7 +218,7 @@ const deleteAddress = async (req, res) => {
         res.redirect("/profile")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -238,7 +238,7 @@ const loadEditAddress = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -261,7 +261,7 @@ const EditAddress = async (req, res) => {
         res.redirect("/profile")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }

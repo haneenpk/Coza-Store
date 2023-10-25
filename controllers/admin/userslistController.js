@@ -32,7 +32,7 @@ const loadUsers = async (req, res) => {
             currentPage: page,
         });
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -56,7 +56,7 @@ const blockUser = async (req, res) => {
         res.redirect("/admin/users");
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -70,7 +70,7 @@ const unblockUser = async (req, res) => {
         res.redirect("/admin/users");
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }

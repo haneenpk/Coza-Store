@@ -151,7 +151,7 @@ const orderProduct = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 }
 
@@ -198,7 +198,7 @@ const saveRzpOrder = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -234,7 +234,7 @@ const loadOrder = async (req, res) => {
             currentPage: page
         });
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 }
 
@@ -255,7 +255,7 @@ const getReturnProductForm = async (req, res) => {
             totalPrice: req.query.totalPrice,
         });
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -284,7 +284,7 @@ const requestReturnProduct = async (req, res) => {
 
         res.redirect("/order");
     } catch (error) {
-        console.log(error)
+        res.render("error/internalError", { error })
     }
 };
 
@@ -347,7 +347,7 @@ const cancelOrder = async (req, res) => {
         await foundOrder.save();
         res.redirect("/order");
     } catch (error) {
-        console.log(error)
+        res.render("error/internalError", { error })
     }
 };
 
@@ -360,7 +360,7 @@ const getWallet = async (req, res) => {
             currentUser,
         });
     } catch (error) {
-        console.log(error)
+        res.render("error/internalError", { error })
     }
 };
 
@@ -382,7 +382,7 @@ const getCoupons = async (req, res) => {
             earnedCoupons,
         });
     } catch (error) {
-        console.log(error);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -407,11 +407,8 @@ const applyCoupon = async (req, res) => {
                 if (foundCoupon.coupon.isActive) {
                     if (!foundCoupon.isUsed) {
                         if (foundCoupon.coupon.discountType === 'fixedAmount') {
-                            console.log("here1");
-                            console.log(foundCoupon.coupon.discountAmount);
                             discount = foundCoupon.coupon.discountAmount;
                         } else {
-                            console.log("here2");
                             discount = (foundCoupon.coupon.discountAmount / 100) * grandTotal;
                         }
                     } else {
@@ -441,7 +438,7 @@ const applyCoupon = async (req, res) => {
             error: "",
         });
     } catch (error) {
-        console.log(error);
+        res.render("error/internalError", { error })
     }
 };
 

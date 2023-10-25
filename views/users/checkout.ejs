@@ -28,13 +28,13 @@
 											<td class="column-2">
 												<%= userData.cart[i].product.name %>
 											</td>
-											<td class="column-3">$<%= userData.cart[i].product.price %>
+											<td class="column-3">₹<%= userData.cart[i].product.price %>
 											</td>
 											<td class="column-3">
 												<%= userData.cart[i].quantity %>
 											</td>
 											<td class="column-3">
-												$<span>
+												₹<span>
 													<%= userData.cart[i].total %>
 												</span>
 											</td>
@@ -142,7 +142,7 @@
 							</div>
 
 							<div class="size-209 p-t-1 h3 text-dark">
-								$
+								₹
 								<% if (discount===0) { %>
 									<span>
 										<%= userData.totalCartAmount %>

@@ -33,7 +33,7 @@
                     <%= userData.cart[i].product.name %>
                   </a>
                 </td>
-                <td class="column-3">$<%= userData.cart[i].product.price %>
+                <td class="column-3">₹<%= userData.cart[i].product.price %>
                 </td>
                 <td class="column-4">
                   <div class="wrap-num-product flex-w m-l-auto m-r-0">
@@ -53,7 +53,7 @@
                   </div>
                 </td>
                 <td class="column-5">
-                  $<span id="totalPrice_<%= userData.cart[i].product._id %>">
+                  ₹<span id="totalPrice_<%= userData.cart[i].product._id %>">
                     <%= userData.cart[i].total %>
                   </span>
                 </td>
@@ -104,7 +104,7 @@
             </div>
 
             <div class="size-209 p-t-1 h3 text-dark">
-              $<span class="" id="grandTotalPrice">
+              ₹<span class="" id="grandTotalPrice">
                 <%= userData.totalCartAmount %>
               </span>
             </div>

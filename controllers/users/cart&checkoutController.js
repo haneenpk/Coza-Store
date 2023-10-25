@@ -13,7 +13,7 @@ const loadShopingCart = async (req, res) => {
         res.render("users/cart", { user: req.session.user_id, userData })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -43,7 +43,7 @@ const addToCart = async (req, res) => {
         res.redirect(`/productDetail?id=${productData._id}`)
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -98,7 +98,7 @@ const updateCart = async (req, res) => {
             return res.status(404).json({ message: "Product not found in the user's cart." });
         }
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -120,7 +120,7 @@ const deleteCart = async (req, res) => {
         res.redirect("/shopingCart")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -140,7 +140,7 @@ const loadCheckout = async (req, res) => {
         res.render("users/checkout", { user: req.session.user_id, userData, selectAddress, allAddress, errorMessage, couponError:"", discount:0, currentCoupon:"" })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -160,7 +160,7 @@ const loadEditAddressCheckout = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -183,7 +183,7 @@ const EditAddressCheckout = async (req, res) => {
         res.redirect("/checkout")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -195,7 +195,7 @@ const loadAddAddressCheckout = async (req, res) => {
         res.render("users/addAdress-checkout", { user: req.session.user_id })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -227,7 +227,7 @@ const AddAddressCheckout = async (req, res) => {
         res.redirect("/checkout")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 }
 
@@ -244,7 +244,7 @@ const selectAddress = async (req, res) => {
         res.redirect("/checkout")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 }
 

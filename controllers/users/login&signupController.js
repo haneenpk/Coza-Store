@@ -13,7 +13,7 @@ const securePassword = async (password) => {
         return passwordHash;
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -72,7 +72,7 @@ const insertUsers = async (req, res) => {
         }
 
     } catch (error) {
-        res.send('helloworld')
+        res.render("error/internalError", { error })
     }
 
 }
@@ -117,10 +117,7 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
         await transporter.sendMail(mailOptions)
 
     } catch (error) {
-        // res.json({
-        //     status: "FAILED",
-        //     message: error.message,
-        // })
+        res.render("error/internalError", { error })
     }
 }
 
@@ -132,7 +129,7 @@ const loadOTPpage = async (req, res) => {
         res.render("users/signup-otp", { userId })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -176,10 +173,7 @@ const verifyOTPSignup = async (req, res) => {
             }
         }
     } catch (error) {
-        res.json({
-            status: "FAILED",
-            message: error.message,
-        })
+        res.render("error/internalError", { error })
     }
 }
 
@@ -190,7 +184,7 @@ const loadSignup = async (req, res) => {
         res.render("users/signup")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -203,7 +197,7 @@ const loadLogin = async (req, res) => {
         res.render("users/login")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -215,7 +209,7 @@ const loadForgetPass = async (req, res) => {
         res.render("users/forget-pass")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -269,9 +263,8 @@ const loadOTPForgetPass = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
-
 }
 
 const loadOTPForgetPassPage = async (req, res) => {
@@ -281,7 +274,7 @@ const loadOTPForgetPassPage = async (req, res) => {
         res.render("users/forgetPass-otp", { userId: req.query.userId })
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -323,10 +316,7 @@ const verifyOTPForgetPassPage = async (req, res) => {
             }
         }
     } catch (error) {
-        res.json({
-            status: "FAILED",
-            message: error.message,
-        })
+        res.render("error/internalError", { error })
     }
 }
 
@@ -355,10 +345,7 @@ const changePass = async (req, res) => {
             }
         }
     } catch (error) {
-        res.json({
-            status: "FAILED",
-            message: error.message,
-        })
+        res.render("error/internalError", { error })
     }
 }
 
@@ -398,9 +385,8 @@ const verifyLogin = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
-
 }
 
 const userLogout = async (req, res) => {
@@ -411,7 +397,7 @@ const userLogout = async (req, res) => {
         res.redirect("/home")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }

@@ -1,7 +1,3 @@
-const Order = require("../../models/orderModel")
-const Return = require("../../models/returnProductsModel")
-const Product = require("../../models/products")
-const User = require("../../models/usersModel")
 const Coupon = require("../../models/couponModel.js")
 
 
@@ -33,12 +29,16 @@ const loadCoupons = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
 const getAddNewCoupon = (req, res) => {
-    res.render('admin/newCoupon',{ error:"" });
+    try {
+        res.render('admin/newCoupon',{ error:"" });
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }  
 };
 
 function generateCouponCode() {
@@ -84,7 +84,7 @@ const addNewCoupon = async (req, res, next) => {
             }
         }
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -95,7 +95,7 @@ const couponAction = async (req, res, next) => {
         await Coupon.findByIdAndUpdate(couponId, { $set: { isActive: state } });
         res.redirect('/admin/coupons');
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 

@@ -38,7 +38,7 @@ const loadHome = async (req, res) => {
       categories,
     });
   } catch (error) {
-    console.error(error.message);
+    res.render("error/internalError", { error })
   }
 };
 
@@ -76,7 +76,7 @@ const loadShop = async (req, res) => {
       categories,
     });
   } catch (error) {
-    console.error(error.message);
+    res.render("error/internalError", { error })
   }
 };
 
@@ -87,7 +87,7 @@ const loadAbout = async (req, res) => {
         res.render("users/about", { user: req.session.user_id })
 
     } catch (error) {
-        console.log(error.message);
+      res.render("error/internalError", { error })
     }
 
 }
@@ -99,9 +99,8 @@ const loadContact = async (req, res) => {
         res.render("users/contact", { user: req.session.user_id })
 
     } catch (error) {
-        console.log(error.message);
+      res.render("error/internalError", { error })
     }
-
 }
 
 const loadProductDetail = async (req, res) => {
@@ -128,7 +127,7 @@ const loadProductDetail = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+      res.render("error/internalError", { error })
     }
 
 }
@@ -160,9 +159,8 @@ const addToWhishlist = async (req, res) => {
         res.redirect(`/productDetail?id=${productId}`);
 
     } catch (error) {
-        console.log(error.message);
+      res.render("error/internalError", { error })
     }
-
 }
 
 const loadWishlist = async (req, res) => {
@@ -189,7 +187,7 @@ const loadWishlist = async (req, res) => {
             displayedWishlistItems,
         });
     } catch (error) {
-        console.log(error.message);
+      res.render("error/internalError", { error })
     }
 };
 
@@ -214,8 +212,8 @@ const deleteWhishlist = async (req, res) => {
     // Redirect the user back to their wishlist page or another appropriate page
     res.redirect("/wishlist");
   } catch (error) {
-    console.log(error.message);
-}
+    res.render("error/internalError", { error })
+  }
 }
 
 module.exports = {

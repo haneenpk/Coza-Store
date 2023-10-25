@@ -35,7 +35,7 @@ const loadOrder = async (req, res) => {
             currentPage: page,
         });
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -48,7 +48,7 @@ const updateActionOrder = async (req, res) => {
         res.redirect("/admin/order")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -69,25 +69,36 @@ const updateOrderCancel = async (req, res) => {
 
         res.redirect("/admin/order")
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
 
-const getReturnRequests = async (req, res, next) => {
+const getReturnRequests = async (req, res) => {
     try {
-        const returnRequests = await Return.find().populate([
-            { path: 'user' },
-            { path: 'order' },
-            { path: 'product' },
-        ]);
+        const ITEMS_PER_PAGE = 5; // Define the number of items to display per page
+        const page = parseInt(req.query.page) || 1; // Extract the page from the query string
+        const totalRequests = await Return.countDocuments(); // Count the total number of return requests
+        const returnRequests = await Return.find()
+            .populate([
+                { path: 'user' },
+                { path: 'order' },
+                { path: 'product' },
+            ])
+            .skip((page - 1) * ITEMS_PER_PAGE) // Calculate the number of items to skip
+            .limit(ITEMS_PER_PAGE); // Define the number of items to display per page
+
+        const totalPages = Math.ceil(totalRequests / ITEMS_PER_PAGE);
+
         res.render("admin/returns", {
             returnRequests,
+            totalPages,
         });
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
+
 
 const returnRequestAction = async (req, res, next) => {
     try {
@@ -132,7 +143,7 @@ const returnRequestAction = async (req, res, next) => {
         await foundOrders.save();
         res.redirect('/admin/return-requests');
     } catch (error) {
-        next(error);
+        res.render("error/internalError", { error })
     }
 };
 

@@ -13,7 +13,7 @@ const loadDashboard = async (req, res) => {
             res.render("./admin/index")
 
         } catch (error) {
-            console.log(error.message);
+            res.render("error/internalError", { error })
         }
 
     }
@@ -23,7 +23,7 @@ const error = async (req, res) => {
     try {
         res.render("admin/404")
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }

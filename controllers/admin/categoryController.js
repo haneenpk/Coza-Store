@@ -34,7 +34,7 @@ const loadCategory = async (req, res) => {
             query,
         });
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 };
 
@@ -43,7 +43,7 @@ const loadAddCategory = async (req, res) => {
     try {
         res.render("./admin/add-category")
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -73,7 +73,7 @@ const AddCategory = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -91,7 +91,7 @@ const loadEditCategory = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -104,7 +104,7 @@ const EditCategory = async (req, res) => {
         res.redirect("/admin/category")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -114,8 +114,6 @@ const deleteCategory = async (req, res) => {
     try {
 
         const products = await Product.find({ category: req.query.id })
-
-        console.log(products);
 
         for (let i = 0; i < products.length; i++) {
             products[i].category = null;
@@ -127,7 +125,7 @@ const deleteCategory = async (req, res) => {
         res.redirect("/admin/category")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }

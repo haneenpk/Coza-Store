@@ -8,7 +8,7 @@ const loadLogin = async (req, res) => {
         res.render("./admin/login")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -44,7 +44,7 @@ const verifyLogin = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
@@ -57,7 +57,7 @@ const logout = async (req, res) => {
         res.redirect("/admin")
 
     } catch (error) {
-        console.log(error.message);
+        res.render("error/internalError", { error })
     }
 
 }
