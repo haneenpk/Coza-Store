@@ -2,6 +2,7 @@ const Order = require("../../models/orderModel")
 const Return = require("../../models/returnProductsModel")
 const Product = require("../../models/products")
 const User = require("../../models/usersModel")
+const Coupon = require("../../models/couponModel")
 
 
 const loadOrder = async (req, res) => {
@@ -30,6 +31,7 @@ const loadOrder = async (req, res) => {
         const totalPages = Math.ceil(totalOrders / perPage);
 
         res.render("admin/order", {
+            activePage: "order",
             orders,
             totalPages,
             currentPage: page,
@@ -41,7 +43,31 @@ const loadOrder = async (req, res) => {
 
 const updateActionOrder = async (req, res) => {
 
+    const order = await Order.findById(req.query.orderId)
+    const userData = await User.findById(order.user)
+
     try {
+
+        if(req.query.action = "Delivered"){
+            // coupons
+            const foundCoupon = await Coupon.findOne({
+                isActive: true, minimumPurchaseAmount: { $lte: order.totalAmount }
+            }).sort({ minimumPurchaseAmount: -1 });
+
+            if (foundCoupon) {
+                const couponExists = userData.earnedCoupons.some((coupon) => coupon.coupon.equals(foundCoupon._id));
+                if (!couponExists) {
+                    userData.earnedCoupons.push({ coupon: foundCoupon._id });
+                }
+            }
+
+            const currentUsedCoupon = await userData.earnedCoupons.find((coupon) => coupon.coupon.equals(req.body.currentCoupon));
+            if (currentUsedCoupon) {
+                currentUsedCoupon.isUsed = true;
+                await Coupon.findByIdAndUpdate(req.body.currentCoupon, { $inc: { usedCount: 1 } });
+            }
+            await userData.save();
+        }
 
         await Order.updateOne({ _id: req.query.orderId }, { status: req.query.action })
 
@@ -91,6 +117,7 @@ const getReturnRequests = async (req, res) => {
         const totalPages = Math.ceil(totalRequests / ITEMS_PER_PAGE);
 
         res.render("admin/returns", {
+            activePage: "order",
             returnRequests,
             totalPages,
         });
@@ -98,7 +125,6 @@ const getReturnRequests = async (req, res) => {
         res.render("error/internalError", { error })
     }
 };
-
 
 const returnRequestAction = async (req, res, next) => {
     try {
@@ -146,7 +172,6 @@ const returnRequestAction = async (req, res, next) => {
         res.render("error/internalError", { error })
     }
 };
-
 
 
 module.exports = {

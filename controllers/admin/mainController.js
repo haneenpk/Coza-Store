@@ -10,7 +10,7 @@ const path = require("path")
 const loadDashboard = async (req, res) => {
 
         try {
-            res.render("./admin/index")
+            res.render("./admin/index",{ activePage: "dashboard" })
 
         } catch (error) {
             res.render("error/internalError", { error })

@@ -49,6 +49,7 @@ const loadProduct = async (req, res) => {
         const totalPages = Math.ceil(totalProducts / perPage);
 
         res.render("admin/product", {
+            activePage: "product",
             products,
             totalPages,
             currentPage: page,
@@ -64,9 +65,9 @@ const loadAddProduct = async (req, res) => {
 
         const categories = await Category.find();
         if (categories) {
-            res.render("./admin/add-product", { categories })
+            res.render("./admin/add-product", { activePage: "product", categories })
         } else {
-            res.render("./admin/add-product")
+            res.render("./admin/add-product", { activePage: "product" })
         }
 
     } catch (error) {
@@ -81,19 +82,19 @@ const AddProduct = async (req, res) => {
 
         const categories = await Category.find();
         if (!req.body.name) {
-            return res.render("./admin/add-product", { categories, error: "Product name should be filled" })
+            return res.render("./admin/add-product", { activePage: "product", categories, error: "Product name should be filled" })
         }
 
         const existingProduct = await Category.findOne({ name: req.body.name })
 
-        if (existingProduct) return res.render("./admin/add-product", { categories, error: "Product name already existed" })
+        if (existingProduct) return res.render("./admin/add-product", { activePage: "product", categories, error: "Product name already existed" })
 
         if (!req.body.price) {
-            return res.render("./admin/add-product", { categories, error: "Price should be filled" })
+            return res.render("./admin/add-product", { activePage: "product", categories, error: "Price should be filled" })
         }
 
         if (!req.body.description) {
-            return res.render("./admin/add-product", { categories, error: "Description should be filled" })
+            return res.render("./admin/add-product", { activePage: "product", categories, error: "Description should be filled" })
         }
 
         const imagesWithPath = req.body.images.map(img => '/products/' + img)
@@ -112,9 +113,9 @@ const AddProduct = async (req, res) => {
         await productData.save()
 
         if (productData) {
-            res.render("./admin/add-product", { categories, message: "Product added" })
+            res.render("./admin/add-product", { activePage: "product", categories, message: "Product added" })
         } else {
-            res.render("./admin/add-product", { categories, error: "Product not added try again" })
+            res.render("./admin/add-product", { activePage: "product", categories, error: "Product not added try again" })
         }
 
 
@@ -148,7 +149,7 @@ const loadEditProduct = async (req, res) => {
 
         const productData = await Product.findById(id).populate('category')
         if (productData) {
-            res.render("./admin/edit-product", { products: productData, categories })
+            res.render("./admin/edit-product", { activePage: "product", products: productData, categories })
         } else {
             res.redirect("./admin/edit-product")
         }

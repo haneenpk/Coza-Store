@@ -4,8 +4,8 @@ const Coupon = require("../../models/couponModel.js")
 const loadCoupons = async (req, res) => {
     try {
         // pagination
-        const page = parseInt(req.params.page) || 1;
-        const pageSize = 3;
+        const page = req.query.page || 1;
+        const pageSize = 8;
         const skip = (page - 1) * pageSize;
         const totalCoupons = await Coupon.countDocuments();
         const totalPages = Math.ceil(totalCoupons / pageSize);
@@ -22,6 +22,7 @@ const loadCoupons = async (req, res) => {
         } else {
             foundCoupons = await Coupon.find().skip(skip).limit(pageSize);
             res.render('admin/coupons', {
+                activePage: "coupon",
                 foundCoupons,
                 filtered: req.query.search ? true : false,
                 currentPage: page || 1,
@@ -35,7 +36,7 @@ const loadCoupons = async (req, res) => {
 
 const getAddNewCoupon = (req, res) => {
     try {
-        res.render('admin/newCoupon',{ error:"" });
+        res.render('admin/newCoupon',{ activePage: "coupon", error:"" });
     } catch (error) {
         res.render("error/internalError", { error })
     }  
@@ -59,12 +60,14 @@ const addNewCoupon = async (req, res, next) => {
     try {
         const { description, discountType, discountAmount, minimumPurchaseAmount, usageLimit } = req.body;
         if (!description || !discountType || !discountAmount || !minimumPurchaseAmount || !usageLimit) {
-            res.render('admin/coupons/newCoupon', {
+            res.render('admin/newCoupon', {
+                activePage: "coupon",
                 error: "All fields are required",
             });
         } else {
             if (description.length < 4 || description.length > 100) {
                 return res.render('admin/newCoupon', {
+                    activePage: "coupon",
                     error: "Description must be between 4 and 100 characters",
                 });
             } else {

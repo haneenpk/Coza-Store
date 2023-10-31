@@ -27,6 +27,7 @@ const loadUsers = async (req, res) => {
         const totalPages = Math.ceil(totalUsers / perPage);
 
         res.render("admin/users", {
+            activePage: "users",
             users,
             totalPages,
             currentPage: page,

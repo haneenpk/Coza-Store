@@ -28,6 +28,7 @@ const loadCategory = async (req, res) => {
         const totalPages = Math.ceil(totalCategories / perPage);
 
         res.render("admin/category", {
+            activePage: "category",
             category,
             totalPages,
             currentPage: page,
@@ -41,7 +42,7 @@ const loadCategory = async (req, res) => {
 const loadAddCategory = async (req, res) => {
 
     try {
-        res.render("./admin/add-category")
+        res.render("./admin/add-category", { activePage: "category" })
     } catch (error) {
         res.render("error/internalError", { error })
     }
@@ -53,13 +54,13 @@ const AddCategory = async (req, res) => {
     try {
 
         if (!req.body.name) {
-            return res.render("./admin/add-category", { error: "Category name should be filled" })
+            return res.render("./admin/add-category", { activePage: "category", error: "Category name should be filled" })
         }
 
         const existingCategory = await Category.findOne({ name: { $regex: new RegExp(req.body.name, 'i') } });
 
         if (existingCategory) {
-            return res.render("./admin/add-category", { error: "This Category already exists" });
+            return res.render("./admin/add-category", { activePage: "category", error: "This Category already exists" });
         }
 
         const category = await Category.create({
@@ -67,9 +68,9 @@ const AddCategory = async (req, res) => {
         });
 
         if (category) {
-            res.render("./admin/add-category", { message: "Category added susseccfully" })
+            res.render("./admin/add-category", { activePage: "category", message: "Category added susseccfully" })
         } else {
-            res.render("./admin/add-category", { error: "Category has been failed" })
+            res.render("./admin/add-category", { activePage: "category", error: "Category has been failed" })
         }
 
     } catch (error) {
@@ -85,7 +86,7 @@ const loadEditCategory = async (req, res) => {
 
         const categoryData = await Category.findById(id);
         if (categoryData) {
-            res.render("./admin/edit-category", { category: categoryData })
+            res.render("./admin/edit-category", { activePage: "category", category: categoryData })
         } else {
             res.redirect("./admin/category")
         }

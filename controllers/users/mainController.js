@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const User = require("../../models/usersModel")
 const Product = require("../../models/products")
 const Category = require("../../models/category")
@@ -29,6 +28,7 @@ const loadHome = async (req, res) => {
     const categories = await Category.find();
 
     res.render('users/index', {
+      activePage: "home",
       products,
       user: req.session.user_id,
       totalPages: Math.ceil(totalProducts / productsPerPage),
@@ -67,6 +67,7 @@ const loadShop = async (req, res) => {
     const categories = await Category.find();
 
     res.render('users/shop', {
+      activePage: "shop",
       products,
       user: req.session.user_id,
       totalPages: Math.ceil(totalProducts / productsPerPage),
@@ -84,7 +85,7 @@ const loadAbout = async (req, res) => {
 
     try {
 
-        res.render("users/about", { user: req.session.user_id })
+        res.render("users/about", { user: req.session.user_id , activePage: "about", })
 
     } catch (error) {
       res.render("error/internalError", { error })
@@ -96,7 +97,7 @@ const loadContact = async (req, res) => {
 
     try {
 
-        res.render("users/contact", { user: req.session.user_id })
+        res.render("users/contact", { user: req.session.user_id , activePage: "contact", })
 
     } catch (error) {
       res.render("error/internalError", { error })
@@ -121,9 +122,9 @@ const loadProductDetail = async (req, res) => {
         const productData = await Product.findById(productIdToCheck)
 
         if (check) {
-            res.render("./users/product-detail", { products: productData, user: req.session.user_id, message: "already exist in a cart" })
+            res.render("./users/product-detail", { activePage: "", products: productData, user: req.session.user_id, message: "already exist in a cart" })
         } else {
-            res.render("./users/product-detail", { products: productData, user: req.session.user_id, message: "" })
+            res.render("./users/product-detail", { activePage: "", products: productData, user: req.session.user_id, message: "" })
         }
 
     } catch (error) {
@@ -180,6 +181,7 @@ const loadWishlist = async (req, res) => {
         const displayedWishlistItems = wishlistItems.slice(startIndex, endIndex);
 
         res.render("users/wishlist", {
+            activePage: "wishlist",
             user: req.session.user_id,
             userData,
             totalPages,

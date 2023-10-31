@@ -10,7 +10,7 @@ const loadShopingCart = async (req, res) => {
 
         const userData = await User.findById(req.session.user_id).populate('cart.product');
 
-        res.render("users/cart", { user: req.session.user_id, userData })
+        res.render("users/cart", { activePage: "shopingCart", user: req.session.user_id, userData })
 
     } catch (error) {
         res.render("error/internalError", { error })
@@ -137,7 +137,7 @@ const loadCheckout = async (req, res) => {
 
         const errorMessage = req.query.error;
 
-        res.render("users/checkout", { user: req.session.user_id, userData, selectAddress, allAddress, errorMessage, couponError:"", discount:0, currentCoupon:"" })
+        res.render("users/checkout", { activePage: "shopingCart", user: req.session.user_id, userData, selectAddress, allAddress, errorMessage, couponError:"", discount:0, currentCoupon:"" })
 
     } catch (error) {
         res.render("error/internalError", { error })
@@ -154,7 +154,7 @@ const loadEditAddressCheckout = async (req, res) => {
         const editAddress = await Address.findById(id)
 
         if (editAddress) {
-            res.render("users/edit-Address-checkout", { user: req.session.user_id, editAddress })
+            res.render("users/edit-Address-checkout", { activePage: "shopingCart", user: req.session.user_id, editAddress })
         } else {
             res.redirect("/profile")
         }
@@ -176,7 +176,7 @@ const EditAddressCheckout = async (req, res) => {
             const id = req.body.id;
 
             const editAddress = await Address.findById(id)
-            return res.render("users/edit-Address-checkout", { user: req.session.user_id, error: "Mobile number should be 10 digits.", editAddress })
+            return res.render("users/edit-Address-checkout", { activePage: "shopingCart", user: req.session.user_id, error: "Mobile number should be 10 digits.", editAddress })
         }
 
         await Address.updateOne({ _id: req.body.id }, { $set: { name, mobile, country, state, district, city, pincode, address } })
@@ -192,7 +192,7 @@ const loadAddAddressCheckout = async (req, res) => {
 
     try {
 
-        res.render("users/addAdress-checkout", { user: req.session.user_id })
+        res.render("users/addAdress-checkout", { activePage: "shopingCart", user: req.session.user_id })
 
     } catch (error) {
         res.render("error/internalError", { error })
@@ -207,7 +207,7 @@ const AddAddressCheckout = async (req, res) => {
 
         // Validate mobile (10 digits)
         if (!/^\d{10}$/.test(mobile)) {
-            return res.render("users/addAdress", { user: req.session.user_id, error: "Mobile number should be 10 digits." })
+            return res.render("users/addAdress", { activePage: "shopingCart", user: req.session.user_id, error: "Mobile number should be 10 digits." })
         }
 
         const check = await Address.find({ userId: req.session.user_id })

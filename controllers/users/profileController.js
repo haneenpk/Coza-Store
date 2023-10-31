@@ -1,7 +1,5 @@
-const mongoose = require('mongoose');
 const User = require("../../models/usersModel")
 const Address = require("../../models/addressModel")
-
 const bcrypt = require("bcrypt")
 
 const loadProfile = async (req, res) => {
@@ -11,7 +9,7 @@ const loadProfile = async (req, res) => {
         const userProfile = await User.findById(req.session.user_id)
         const userAddress = await Address.find({ userId: req.session.user_id })
 
-        res.render("users/profile", { user: req.session.user_id, userProfile, userAddress })
+        res.render("users/profile", { activePage: "profile", user: req.session.user_id, userProfile, userAddress })
 
     } catch (error) {
         res.render("error/internalError", { error })
@@ -25,7 +23,7 @@ const loadEditProfile = async (req, res) => {
 
         const userProfile = await User.findById(req.query.id)
 
-        res.render("users/edit-profile", { user: req.session.user_id, userProfile })
+        res.render("users/edit-profile", { activePage: "profile", user: req.session.user_id, userProfile })
 
     } catch (error) {
         res.render("error/internalError", { error })
@@ -101,7 +99,7 @@ const EditProfile = async (req, res) => {
                 res.redirect("/profile")
 
             } else {
-                res.render("users/edit-profile", { user: req.session.user_id, userProfile: userData, error: "You have to make some changes" })
+                res.render("users/edit-profile", { activePage: "profile", user: req.session.user_id, userProfile: userData, error: "You have to make some changes" })
             }
         }
 
@@ -117,7 +115,7 @@ const loadChangePass = async (req, res) => {
 
         const userProfile = await User.findById(req.session.user_id)
 
-        res.render("users/change-passUser", { user: req.session.user_id, userProfile })
+        res.render("users/change-passUser", { activePage: "profile", user: req.session.user_id, userProfile })
 
     } catch (error) {
         res.render("error/internalError", { error })
@@ -143,7 +141,7 @@ const ChangePass = async (req, res) => {
             return res.redirect("/profile")
 
         } else {
-            return res.render("users/change-passUser", { user: req.session.user_id, userProfile, error: "Your old password is incorrect" })
+            return res.render("users/change-passUser", { activePage: "profile", user: req.session.user_id, userProfile, error: "Your old password is incorrect" })
         }
 
 
@@ -157,7 +155,7 @@ const loadAddAddress = async (req, res) => {
 
     try {
 
-        res.render("users/addAdress", { user: req.session.user_id })
+        res.render("users/addAdress", { activePage: "profile", user: req.session.user_id })
 
     } catch (error) {
         res.render("error/internalError", { error })
@@ -172,7 +170,7 @@ const AddAddress = async (req, res) => {
 
         // Validate mobile (10 digits)
         if (!/^\d{10}$/.test(mobile)) {
-            return res.render("users/addAdress", { user: req.session.user_id, error: "Mobile number should be 10 digits." })
+            return res.render("users/addAdress", { activePage: "profile", user: req.session.user_id, error: "Mobile number should be 10 digits." })
         }
 
         const check = await Address.find({ userId: req.session.user_id })
@@ -232,7 +230,7 @@ const loadEditAddress = async (req, res) => {
         const editAddress = await Address.findById(id)
 
         if (editAddress) {
-            res.render("users/edit-Address", { user: req.session.user_id, editAddress })
+            res.render("users/edit-Address", { activePage: "profile", user: req.session.user_id, editAddress })
         } else {
             res.redirect("/profile")
         }
@@ -254,7 +252,7 @@ const EditAddress = async (req, res) => {
             const id = req.body.id;
 
             const editAddress = await Address.findById(id)
-            return res.render("users/edit-Address", { user: req.session.user_id, error: "Mobile number should be 10 digits.", editAddress })
+            return res.render("users/edit-Address", { activePage: "profile", user: req.session.user_id, error: "Mobile number should be 10 digits.", editAddress })
         }
 
         await Address.updateOne({ _id: req.body.id }, { $set: { name, mobile, country, state, district, city, pincode, address } })

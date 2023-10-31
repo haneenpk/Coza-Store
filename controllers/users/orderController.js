@@ -48,25 +48,6 @@ const orderProduct = async (req, res) => {
                 }
             });
 
-            // coupons
-            const foundCoupon = await Coupon.findOne({
-                isActive: true, minimumPurchaseAmount: { $lte: userData.totalCartAmount }
-            }).sort({ minimumPurchaseAmount: -1 });
-
-            if (foundCoupon) {
-                const couponExists = userData.earnedCoupons.some((coupon) => coupon.coupon.equals(foundCoupon._id));
-                if (!couponExists) {
-                    userData.earnedCoupons.push({ coupon: foundCoupon._id });
-                }
-            }
-
-            const currentUsedCoupon = await userData.earnedCoupons.find((coupon) => coupon.coupon.equals(req.body.currentCoupon));
-            if (currentUsedCoupon) {
-                currentUsedCoupon.isUsed = true;
-                await Coupon.findByIdAndUpdate(req.body.currentCoupon, { $inc: { usedCount: 1 } });
-            }
-
-
             if (selectedPaymentOptions === "Cash on delivery") {
                 await order.save()
             } else if (selectedPaymentOptions === "Razorpay") {
@@ -82,6 +63,7 @@ const orderProduct = async (req, res) => {
 
                 // Redirect the user to the Razorpay checkout page
                 return res.render("users/razorpay", {
+                    activePage: "shopingCart", 
                     order: razorpayOrder,
                     key_id: process.env.RAZORPAY_ID_KEY,
                     user: userData
@@ -227,6 +209,7 @@ const loadOrder = async (req, res) => {
         ]);
 
         res.render("users/order", {
+            activePage: "profile", 
             user: req.session.user_id,
             currentUser,
             orders,
@@ -245,6 +228,7 @@ const getReturnProductForm = async (req, res) => {
         const category = await Category.findById(req.query.category);
         const defaultAddress = await Address.findOne({ userId: req.session.user_id, default: true });
         res.render("users/returnForm", {
+            activePage: "shopingCart", 
             user: req.session.user_id,
             currentUser,
             currentAddress: defaultAddress,
@@ -356,6 +340,7 @@ const getWallet = async (req, res) => {
         // fix sorting
         const currentUser = await User.findById(req.session.user_id).sort({ 'wallet.transactions.timestamp': -1 });
         res.render("users/wallet", {
+            activePage: "profile", 
             user: req.session.user_id,
             currentUser,
         });
@@ -376,6 +361,7 @@ const getCoupons = async (req, res) => {
         const remainingCoupons = allCoupons.filter((coupon) => !earnedCouponIds.includes(coupon._id.toString()));
 
         res.render("users/coupons", {
+            activePage: "profile", 
             user: req.session.user_id,
             currentUser,
             allCoupons: remainingCoupons,
@@ -425,6 +411,7 @@ const applyCoupon = async (req, res) => {
         }
 
         res.render("users/checkout", {
+            activePage: "shopingCart", 
             user: req.session.user_id,
             userData,
             cartProducts,
