@@ -48,7 +48,7 @@ const updateActionOrder = async (req, res) => {
 
     try {
 
-        if(req.query.action = "Delivered"){
+        if(req.query.action === "Delivered"){
             // coupons
             const foundCoupon = await Coupon.findOne({
                 isActive: true, minimumPurchaseAmount: { $lte: order.totalAmount }
@@ -61,11 +61,6 @@ const updateActionOrder = async (req, res) => {
                 }
             }
 
-            const currentUsedCoupon = await userData.earnedCoupons.find((coupon) => coupon.coupon.equals(req.body.currentCoupon));
-            if (currentUsedCoupon) {
-                currentUsedCoupon.isUsed = true;
-                await Coupon.findByIdAndUpdate(req.body.currentCoupon, { $inc: { usedCount: 1 } });
-            }
             await userData.save();
         }
 

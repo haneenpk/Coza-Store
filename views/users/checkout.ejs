@@ -123,7 +123,7 @@
 						<div class="flex-w flex-t p-t-27">
 							<div class="size-208">
 								<span class="mtext-101 cl2">
-									Items:
+									Items :
 								</span>
 							</div>
 
@@ -134,10 +134,24 @@
 							</div>
 						</div>
 
+						<div class="flex-w flex-t p-t-27">
+							<div class="size-208">
+								<span class="mtext-101 cl2">
+									Discount :
+								</span>
+							</div>
+
+							<div class="size-209 p-t-1">
+								<span class="mtext-110 cl2">
+									₹ <%= discount %>
+								</span>
+							</div>
+						</div>
+
 						<div class="flex-w flex-t p-t-27 p-b-33">
 							<div class="size-208">
 								<span class="mtext-101 cl2">
-									Total:
+									Total :
 								</span>
 							</div>
 
@@ -155,6 +169,7 @@
 						</div>
 
 						<form action="/order-product" method="post">
+							<% if(userData.totalCartAmount - discount !== 0){ %>
 							<div class="mb-3 form-check p-t-27">
 								<span class="mtext-101 cl2">Select Payment Option</span>
 								<input type="checkbox" class="form-check-input" style="margin-top: 15px;"
@@ -169,6 +184,7 @@
 								<label class="form-check-label" for="savePaymentInfo"
 									style="margin-top: 7px;">Razorpay</label>
 							</div>
+							<% } %>
 							<input type="hidden" name="discount" value="<%= discount %>">
 							<input type="hidden" name="currentCoupon" value="<%= currentCoupon %>">
 							<input type="hidden" name="totalAmount" value="<%= userData.totalCartAmount - discount %>">

@@ -108,7 +108,7 @@ const sendOTPVerificationEmail = async ({ _id, email }, res) => {
             userId: _id,
             otp: hashedOTP,
             createdAt: Date.now(),
-            expiresAt: Date.now() + 3600000,
+            expiresAt: Date.now() + 60000,
         })
 
         // save otp record
@@ -348,6 +348,125 @@ const changePass = async (req, res) => {
     }
 }
 
+//verify account
+const loadVerifyAc = async (req, res) => {
+    try {
+
+        res.render("users/verifiy-account")
+
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+
+}
+
+const loadOTPVerifyAc = async (req, res) => {
+    try {
+
+        if (!req.body.username) return res.render("users/verifiy-account", { message: "username should be filled" })
+        if (!req.body.email) return res.render("users/verifiy-account", { message: "email should be filled" })
+        const userData = await User.findOne({ username: req.body.username })
+
+        if (userData) {
+
+            if (userData.email === req.body.email) {
+
+                const otp = `${Math.floor(1000 + Math.random() * 9000)}`
+
+                // mail options
+                const mailOptions = {
+                    from: process.env.AUTH_EMAIL,
+                    to: userData.email,
+                    subject: "Verify Your Email",
+                    html: `<p>Enter <b>${otp}</b> in the website verify your email address to Verifying your account process</p>
+                    <p>This code <b>expire in 1 minutes</b>.</p>`,
+                }
+
+                // hash the otp
+                const saltRounds = 10
+
+                const hashedOTP = await bcrypt.hash(otp, saltRounds)
+                const newOTPVerification = await new UserOTPVerification({
+                    userId: userData._id,
+                    otp: hashedOTP,
+                    createdAt: Date.now(),
+                    expiresAt: Date.now() + 3600000,
+                })
+
+                // save otp record
+                await newOTPVerification.save()
+                await transporter.sendMail(mailOptions)
+
+
+                res.redirect(`/verifyOTPVerifyAc?userId=${userData._id}`)
+
+            } else {
+                res.render("users/verifiy-account", { message: "email is incorrect" })
+            }
+
+        } else {
+            res.render("users/verifiy-account", { message: "username is incorrect" })
+        }
+
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+}
+
+const loadOTPVerifyAcPage = async (req, res) => {
+
+    try {
+
+        res.render("users/verifyAc-otp", { userId: req.query.userId })
+
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+
+}
+
+const verifyOTPVerifyAcPage = async (req, res) => {
+    try {
+
+        let { otp, userId } = req.body
+        if (!userId || !otp) {
+            res.render("users/verifyAc-otp", { message: `Empty otp details are not allowed`, userId })
+        } else {
+            const UserOTPVerificationRecords = await UserOTPVerification.find({
+                userId,
+            })
+            if (UserOTPVerificationRecords.length <= 0) {
+                //no record found
+                res.render("users/verifyAc-otp", { message: "Account record doesn't exist . Please sign up", userId })
+            } else {
+                //user otp records exists
+                const { expiresAt } = UserOTPVerificationRecords[0]
+                const hashedOTP = UserOTPVerificationRecords[0].otp
+
+                if (expiresAt < Date.now()) {
+                    //user otp records has expires
+                    await UserOTPVerification.deleteMany({ userId })
+                    res.render("users/verifyAc-otp", { message: "Code has expires. Please request again.", userId })
+                } else {
+                    const validOTP = await bcrypt.compare(otp, hashedOTP)
+
+                    if (!validOTP) {
+                        //supplied otp is wrong
+                        res.render("users/verifyAc-otp", { message: "Invalid OTP. Check your Email.", userId })
+                    } else {
+                        //success
+                        await UserOTPVerification.deleteMany({ userId })
+                        await User.updateOne({ _id:userId },{ $set: { verified: true } })
+                        res.render("users/login", { success: "Verified your Account successfully" })
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+}
+
 const verifyLogin = async (req, res) => {
 
     try {
@@ -412,6 +531,10 @@ module.exports = {
     loadOTPForgetPassPage,
     verifyOTPForgetPassPage,
     changePass,
+    loadVerifyAc,
+    loadOTPVerifyAc,
+    loadOTPVerifyAcPage,
+    verifyOTPVerifyAcPage,
     verifyLogin,
     userLogout,
 }

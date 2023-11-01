@@ -61,8 +61,12 @@
                   copy
                 </button>
                 <br>
+                <% } %> 
+                <% if(coupon.coupon.discountType === "percentage"){ %>
+                  Discount Percentage: <%= coupon.coupon.discountAmount %>%, 
+                <% }else{ %>
+                  Discount Amount: <%= coupon.coupon.discountAmount %>₹, 
                 <% } %>
-                <%= coupon.coupon.description %>,
                 Discount Type: <%= coupon.coupon.discountType %>,
                 Valid Upto: <%= coupon.coupon.expirationDate.toLocaleDateString() %>
               </p>

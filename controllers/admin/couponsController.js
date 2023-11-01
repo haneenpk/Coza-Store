@@ -65,6 +65,14 @@ const addNewCoupon = async (req, res, next) => {
                 error: "All fields are required",
             });
         } else {
+
+            if(discountType === "percentage" && discountAmount>100){
+                return res.render('admin/newCoupon', {
+                    activePage: "coupon",
+                    error: "Discount percentage is greater than 100",
+                });
+            }
+
             if (description.length < 4 || description.length > 100) {
                 return res.render('admin/newCoupon', {
                     activePage: "coupon",

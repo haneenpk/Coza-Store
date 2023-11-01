@@ -67,6 +67,16 @@ usersRoute.post("/verifyOTPForgetPass", auth.isLogout, loginSignupController.ver
 
 usersRoute.post("/changePass", auth.isLogout, loginSignupController.changePass)
 
+usersRoute.get("/verify-account", auth.isLogout, loginSignupController.loadVerifyAc)
+
+usersRoute.post("/verify-account", auth.isLogout, loginSignupController.loadOTPVerifyAc)
+
+usersRoute.get("/verifyOTPVerifyAc", auth.isLogout, loginSignupController.loadOTPVerifyAcPage)
+
+usersRoute.post("/verifyOTPVerifyAc", auth.isLogout, loginSignupController.verifyOTPVerifyAcPage)
+
+
+
 // profile
 
 usersRoute.get("/profile", auth.isLogin, profileController.loadProfile)

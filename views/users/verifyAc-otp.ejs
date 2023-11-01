@@ -46,43 +46,28 @@
         .login-btn:hover {
             background-color: #0056b3;
         }
-
-        #timeout-message {
-            display: none;
-            color: #f00;
-            font-weight: bold;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 box">
-                <form action="/verifyOTP" method="post">
-                    <h3 class="text-center">OTP Verification</h3>
-        
+                <form action="/verifyOTPVerifyAc" method="post">
+                    <h3 class="text-center">Verify Account OTP Verification</h3>
+
                     <div class="form-group">
                         <label for="otp">Enter OTP</label>
                         <input type="text" class="form-control" placeholder="Enter OTP" id="otp" name="otp">
                         <input type="hidden" name="userId" value="<%= userId %>">
                     </div>
-        
-                    <div style="text-align: center;">
-                        <button class="btn btn-primary login-btn" type="submit">Verify</button>
-                        <a id="resend-button" class="" style="display: none; cursor: pointer; width: 95px;" onclick="resendOTP()">Resend OTP</a>
-                    </div>
+
+                    <button class="btn btn-primary btn-block login-btn" type="submit">Verify</button>
                 </form>
 
                 <div style="margin-top: 10px; text-align: center;">
                     <% if(typeof message !== "undefined") { %>
                         <span style="color:#f00; font-weight: bold;"><%= message %></span>
                     <% } %>
-                </div>
-
-                <div style="text-align: center;">
-                    <span id="timeout-message">Timeout! Please request a new OTP.</span>
-                    <span id="countdown" style="display: block; font-weight: bold;"></span>
                 </div>
             </div>
         </div>
@@ -92,39 +77,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var timeoutInSeconds = 60; // Define the timeout duration in seconds
-            var timeoutMessageElement = document.getElementById('timeout-message');
-            var resendButton = document.getElementById('resend-button');
-            var countdownElement = document.getElementById('countdown');
-
-            function startTimer(duration, display) {
-                var timer = duration, minutes, seconds;
-                var interval = setInterval(function () {
-                    minutes = parseInt(timer / 60, 10);
-                    seconds = parseInt(timer % 60, 10);
-
-                    minutes = minutes < 10 ? "0" + minutes : minutes;
-                    seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                    display.textContent = minutes + ":" + seconds;
-
-                    if (--timer < 0) {
-                        clearInterval(interval);
-                        timeoutMessageElement.style.display = 'block';
-                        resendButton.style.display = 'block';
-                    }
-                }, 1000);
-            }
-
-            startTimer(timeoutInSeconds, countdownElement);
-        });
-
-        function resendOTP() {
-            // Implement the logic for resending OTP here
-            // For example, make an AJAX request to the server to resend the OTP
-        }
-    </script>
 </body>
 </html>

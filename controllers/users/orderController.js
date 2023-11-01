@@ -124,6 +124,12 @@ const orderProduct = async (req, res) => {
                 userData.totalCartAmount = 0;
             }
 
+            const currentUsedCoupon = await userData.earnedCoupons.find((coupon) => coupon.coupon.equals(req.body.currentCoupon));
+            if (currentUsedCoupon) {
+                currentUsedCoupon.isUsed = true;
+                await Coupon.findByIdAndUpdate(req.body.currentCoupon, { $inc: { usedCount: 1 } });
+            }
+
             await userData.save();
             res.redirect("/order")
 
@@ -392,8 +398,12 @@ const applyCoupon = async (req, res) => {
             if (foundCoupon) {
                 if (foundCoupon.coupon.isActive) {
                     if (!foundCoupon.isUsed) {
-                        if (foundCoupon.coupon.discountType === 'fixedAmount') {
-                            discount = foundCoupon.coupon.discountAmount;
+                        if (foundCoupon.coupon.discountType === 'fixedAmount') {   
+                            if (foundCoupon.coupon.discountAmount > grandTotal){
+                                couponError = "Your total is less than coupon amount."
+                            } else {
+                                discount = foundCoupon.coupon.discountAmount;
+                            }                       
                         } else {
                             discount = (foundCoupon.coupon.discountAmount / 100) * grandTotal;
                         }
