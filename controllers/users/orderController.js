@@ -311,9 +311,6 @@ const cancelOrder = async (req, res) => {
 
         foundOrder.totalAmount -= foundProduct.total
 
-        foundProduct.quantity = 0
-        foundProduct.total = 0
-
         await EditProduct.save();
 
         // Function to check if all products in the order are cancelled

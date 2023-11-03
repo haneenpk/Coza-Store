@@ -9,29 +9,40 @@
           Balance: <strong>₹<%= currentUser.wallet.balance.toFixed(2) %></strong>
         </span>
         <span class="d-block text-primary mt-4 text-uppercase">Transaction History</span>
+      
         <% if (!currentUser.wallet.transactions.length) { %>
-        <p class="mb-0">No data found.</p>
+          <p class="mb-0">No data found.</p>
         <% } else { %>
-        <% currentUser.wallet.transactions.forEach((transaction)=> { %>
-        <div class="d-flex mt-2">
-          <p class="mb-0">
-            <span class="text-dark"><% const transactionDate = new Date(transaction.timestamp) %>
-            <span class="text-black" style="font-weight: bold;">Date & Time:</span> <%= transactionDate.toLocaleString() %>.</span>
-            <span class="text-black" style="font-weight: bold; margin-left: 10px;">Description:</span>
-            <span><%= transaction.description %></span>
-          </p>
-          <% if (transaction.type === 'Credit') { %>
-          <span class="text-black" style="font-weight: bold; margin-left: 10px;">Amount:</span>
-          <span class="text-success ml-1">+ ₹<%= transaction.amount %></span>
-          <% } else { %>
-          <span class="text-black" style="font-weight: bold; margin-left: 10px;">Amount:</span>
-          <span class="text-danger ml-1">- ₹<%= transaction.amount %></span>
-          <% } %>
-        </div>
-        <% }) %>
+          <div class="table-responsive mt-3">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% currentUser.wallet.transactions.forEach((transaction)=> { %>
+                  <tr>
+                    <td><% const transactionDate = new Date(transaction.timestamp) %>
+                      <%= transactionDate.toLocaleString() %>
+                    </td>
+                    <td><%= transaction.description %></td>
+                    <td>
+                      <% if (transaction.type === 'Credit') { %>
+                        <span class="text-success">+ ₹<%= transaction.amount %></span>
+                      <% } else { %>
+                        <span class="text-danger">- ₹<%= transaction.amount %></span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
         <% } %>
       </div>
-
     </div>
   </div>
 </section>
