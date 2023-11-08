@@ -14,7 +14,7 @@ const fileFilter = (req,file,cb)=>{
 }
 const upload = multer({ storage, fileFilter })
 
-//products
+// Products
 exports.uploadProductImages = upload.fields([
   {
     name: 'images',
@@ -41,7 +41,7 @@ exports.resizeProductImages = async (req, res, next) => {
 }
 
 
-//profile
+// Profile
 exports.uploadProfileImage = upload.single('image');
 
 exports.resizeProfileImage =async  (req,res,next) => {
@@ -53,6 +53,24 @@ exports.resizeProfileImage =async  (req,res,next) => {
     .resize(300,300)
     .toFormat('jpeg')
     .png({quality:90}).toFile(`public/userProfile/${req.file.originalname}`);
+    next();
+    
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+
+// Banner
+exports.uploadBannerImage = upload.single('image');
+
+exports.resizeBannerImage =async  (req,res,next) => {
+  try {
+    if(!req.file) return next();
+    req.file.originalname = `banner-${Date.now()}.png`;
+    req.body.image = `/banner/${req.file.originalname}`
+    await sharp(req.file.buffer)
+    .toFormat('jpeg')
+    .png({quality:90}).toFile(`public/banner/${req.file.originalname}`);
     next();
     
   } catch (error) {

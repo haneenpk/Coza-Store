@@ -26,15 +26,16 @@ const categoryController = require("../controllers/admin/categoryController")
 const productController = require("../controllers/admin/productController")
 const orderController = require("../controllers/admin/orderController")
 const couponsController = require("../controllers/admin/couponsController")
+const bannerController = require("../controllers/admin/bannerController")
 
 
 // login admin
 
-adminRoute.get("/",auth.isLogout,loginSignupController.loadLogin)
+adminRoute.get("/",auth.isLogin,mainController.loadDashboard)
 
 adminRoute.get("/login",auth.isLogout,loginSignupController.loadLogin)
 
-adminRoute.post("/",loginSignupController.verifyLogin)
+adminRoute.post("/login",loginSignupController.verifyLogin)
 
 adminRoute.get("/logout",auth.isLogin,loginSignupController.logout)
 
@@ -88,6 +89,8 @@ adminRoute.get("/return-requests", auth.isLogin, orderController.getReturnReques
 
 adminRoute.post("/return-requests", auth.isLogin, orderController.returnRequestAction)
 
+// Order End
+
 // Users
 
 adminRoute.get("/users",auth.isLogin,userslistController.loadUsers)
@@ -102,13 +105,31 @@ adminRoute.get("/unblock-user",auth.isLogin,userslistController.unblockUser)
 
 adminRoute.get("/coupons",auth.isLogin,couponsController.loadCoupons)
 
-adminRoute.post("/coupons",auth.isLogin,couponsController.loadCoupons)
-
 adminRoute.get("/new-coupon",auth.isLogin,couponsController.getAddNewCoupon)
 
 adminRoute.post("/new-coupon",auth.isLogin,couponsController.addNewCoupon)
 
 adminRoute.patch("/coupons/action/:id",auth.isLogin,couponsController.couponAction)
+
+// Coupons End
+
+// Banner
+
+adminRoute.get("/banner",auth.isLogin,bannerController.middlewareBanner,bannerController.loadBanner)
+
+adminRoute.get("/add-banner",auth.isLogin,bannerController.loadAddBanner)
+
+adminRoute.post("/add-banner",auth.isLogin, Imagemiddleware.uploadBannerImage, Imagemiddleware.resizeBannerImage,bannerController.AddBanner)
+
+adminRoute.get("/delete-banner",auth.isLogin,bannerController.deleteBanner)
+
+adminRoute.get("/edit-banner",auth.isLogin,bannerController.loadEditBanner)
+
+adminRoute.post("/edit-banner",auth.isLogin,bannerController.EditBanner)
+
+adminRoute.get("/deletePhoto-banner", auth.isLogin, bannerController.destroyBannerImage)
+
+adminRoute.patch('/uploadPhoto-banner',auth.isLogin, Imagemiddleware.uploadBannerImage, Imagemiddleware.resizeBannerImage,bannerController.uploadBannerImage)
 
 
 

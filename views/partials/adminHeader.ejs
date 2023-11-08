@@ -104,6 +104,23 @@
                 </li>
             <% } %> 
 
+            <!-- Sales Report -->
+            <% if(activePage === "salesReport") { %>
+                <li class="menu-item active">
+                    <a href="/admin/sales-report" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Analytics">Sales Report</div>
+                    </a>
+                </li>
+            <% } else { %>
+                <li class="menu-item">
+                    <a href="/admin/sales-report" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Analytics">Sales Report</div>
+                    </a>
+                </li>
+            <% } %> 
+
             <!-- Users -->
             <% if(activePage === "users") { %>
                 <li class="menu-item active">
@@ -185,6 +202,23 @@
                     <a href="/admin/coupons" class="menu-link">
                       <i class="menu-icon tf-icons bx bx-collection"></i>
                       <div data-i18n="Analytics">Coupon</div>
+                    </a>
+                </li>
+            <% } %> 
+
+            <!-- Banner -->
+            <% if(activePage === "banner") { %>
+                <li class="menu-item active">
+                    <a href="/admin/banner" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Analytics">Banner</div>
+                    </a>
+                </li>
+            <% } else { %>
+                <li class="menu-item">
+                    <a href="/admin/banner" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Analytics">Banner</div>
                     </a>
                 </li>
             <% } %> 

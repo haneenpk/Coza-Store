@@ -12,7 +12,7 @@ const loadOrder = async (req, res) => {
     const { customer, status } = req.query;
 
     try {
-        let ordersQuery = Order.find().populate([{ path: 'products.product' }, { path: 'user' }]);
+        let ordersQuery = Order.find().populate([{ path: 'products.product' }, { path: 'user' }])
 
         if (customer) {
             ordersQuery = ordersQuery.where('user.username').regex(new RegExp(customer, 'i'));

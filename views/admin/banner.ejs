@@ -1,0 +1,135 @@
+<%- include('../partials/adminHeader') %>
+
+            <div class="container-xxl flex-grow-1 container-p-y">
+
+              <!-- Search -->
+              <form action="/admin/banner" id="search">
+                <input style="display: inline;" type="text" name="query" class="form-control" placeholder="Search product name...">
+                <button style="margin-top: 10px;" type="submit" class="btn btn-primary">Search</button>
+              </form>
+              <!-- /Search -->
+
+            <form action="/admin/banner" id="search" style="margin-top: 15px;">
+                
+                <!-- Category filter dropdown -->
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    <% for (let i = 0; i < categories.length; i++) { %>
+                        <option value="<%= categories[i]._id %>"><%= categories[i].name %></option>
+                    <% } %>
+                </select>
+            
+                <button type="submit" style="margin-top: 10px;" class="btn btn-primary">Filter</button>
+            </form>
+              
+              <a href="/admin/add-banner"><button style="margin-top: 20px;" type="button" class="btn btn-primary btn-lg">Add Banner</button></a>  
+
+              <!-- Basic Bootstrap Table -->
+              <div class="card" style="margin-top: 20px;">
+                <h5 class="card-header">Banners</h5>
+                <div class="table-responsive text-nowrap">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>Banner image</th>
+                        <th>Name</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      <%
+                         if (banners.length > 0) {
+                            for (let i = 0; i < banners.length; i++) {
+                              %>
+                               <tr>
+                                 <td>
+                                    <div class="row">
+                                      <div class="col-4">
+                                        <img src="<%= banners[i].image %>" alt="" class="img-click" style="width: 100px; height: 60px;">
+                                      </div>
+                                    </div>            
+                                 </td>
+                                 <td><%= banners[i].name %></td>
+                                 <td><%= banners[i].title %></td>
+                                 <td>
+                                  <% if(banners[i].category !== null) { %>
+                                    <%= banners[i].category.name %>
+                                  <% } else { %>
+                                    <span class="text-danger">Not mention</span>
+                                  <% } %>               
+                                 </td>
+                                 <td>
+            
+                                    <a class="dropdown-item" href="/admin/edit-banner?id=<%= banners[i]._id %>"
+                                    ><i class="bx bx-edit-alt me-2"></i> Edit</a>
+                  
+                                    <a class="dropdown-item" href="/admin/delete-banner?id=<%= banners[i]._id %>"
+                                    ><i class="bx bx-trash me-2"></i> Delete</a>
+                                         
+                                  </td>
+                               </tr>
+                              <%          
+                            }
+                         } else {
+                           %>
+                            <tr>
+                              <td colspan="6">Banner Not Found</td>
+                            </tr>
+                           <%
+                         }
+                      %>
+                      <!-- Add more rows as needed -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!--/ Basic Bootstrap Table -->
+              <!-- Display products here -->
+
+              <!-- Pagination controls -->
+              <div class="pagination" style="margin-top: 15px;">
+
+                  <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+                  <% } %>
+
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../assets/vendor/js/bootstrap.js"></script>
+    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script src="../assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script src="../assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="../assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
+</html>

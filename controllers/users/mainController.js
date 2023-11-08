@@ -1,6 +1,7 @@
 const User = require("../../models/usersModel")
 const Product = require("../../models/products")
 const Category = require("../../models/category")
+const Banner = require("../../models/bannerModel")
 
 
 const loadHome = async (req, res) => {
@@ -27,8 +28,11 @@ const loadHome = async (req, res) => {
     const totalProducts = await Product.countDocuments(queryFilters);
     const categories = await Category.find();
 
+    const banners = await Banner.find()
+
     res.render('users/index', {
       activePage: "home",
+      banners,
       products,
       user: req.session.user_id,
       totalPages: Math.ceil(totalProducts / productsPerPage),
