@@ -165,17 +165,19 @@
             <div class="container-xxl flex-grow-1 container-p-y">
 
               <form action="/admin/order" id="search">
-                
-                <!-- Status filter dropdown -->
-                <select name="status" class="form-select">
-                    <option value="">All Status</option>
-                    <option value="Processing">Processing</option>
-                    <option value="Shipped">Shipped</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-            
-                <button type="submit" style="margin-top: 10px;" class="btn btn-primary">Apply Filters</button>
+                <div class="row d-flex">
+                  <div class="col-10">
+                  <!-- Status filter dropdown -->
+                  <select name="status" class="form-select">
+                   <option value="">All Status</option>
+                   <option value="Processing">Processing</option>
+                   <option value="Shipped">Shipped</option>
+                   <option value="Delivered">Delivered</option>
+                   <option value="Cancelled">Cancelled</option>
+                  </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary col-2">Apply Filters</button>
+                </div>           
             </form>
 
               <!-- Basic Bootstrap Table -->

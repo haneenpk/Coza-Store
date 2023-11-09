@@ -4,8 +4,12 @@
 
               <!-- Search -->
               <form action="/admin/users" id="search">
-                <input style="display: inline;" type="text" name="query" class="form-control" placeholder="Search...">
-                <button style="margin-top: 10px;" type="submit" class="btn btn-primary">Search</button>
+                <div class="row d-flex">
+                  <div class="col-11">
+                    <input type="text" name="query" class="form-control" placeholder="Search...">
+                  </div>
+                  <button type="submit" class="btn btn-primary col-1">Search</button>
+                </div>
               </form>
               <!-- /Search -->
 
@@ -29,7 +33,7 @@
                             for (let i = 0; i < users.length; i++) {
                               %>
                                <tr>
-                                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><%= users[i].username %></strong></td>
+                                 <td><strong><%= users[i].username %></strong></td>
                                  <td><%= users[i].email %></td>
                                  <td><%= users[i].mobile %></td>
                                  <td><%
