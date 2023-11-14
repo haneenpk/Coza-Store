@@ -4,6 +4,7 @@ const Category = require("../../models/category")
 const Address = require("../../models/addressModel")
 const Order = require("../../models/orderModel")
 const Return = require("../../models/returnProductsModel")
+const Cancel = require("../../models/cancelProductsModel")
 const Product = require("../../models/products")
 const razorpay = require("../utils/razorpayConfig")
 const Coupon = require("../../models/couponModel")
@@ -21,117 +22,124 @@ const orderProduct = async (req, res) => {
 
             const selectAddress = await Address.findOne({ userId: req.session.user_id, default: true })
 
-            const products = userData.cart.map((cartItem) => {
-                return {
-                    product: cartItem.product, // Product reference
-                    quantity: cartItem.quantity, // Quantity
-                    total: cartItem.total,
-                };
-            });
+            if(selectAddress){
 
-            const order = new Order({
-                user: req.session.user_id,
-                products: products,
-                totalAmount: req.body.totalAmount,
-                paymentMethod: selectedPaymentOptions,
-                deliveryAddress: {
-                    _id: selectAddress._id,
-                    userId: userData._id,
-                    name: selectAddress.name,
-                    mobile: selectAddress.mobile,
-                    country: selectAddress.country,
-                    state: selectAddress.state,
-                    district: selectAddress.district,
-                    city: selectAddress.city,
-                    pincode: selectAddress.pincode,
-                    address: selectAddress.address
-                }
-            });
-
-            if (selectedPaymentOptions === "Cash on delivery") {
-                await order.save()
-            } else if (selectedPaymentOptions === "Razorpay") {
-                // Create a Razorpay order
-                const razorpayOrder = await razorpay.orders.create({
-                    amount: userData.totalCartAmount * 100, // Total amount in paise
-                    currency: 'INR', // Currency code (change as needed)
-                    receipt: `${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}${Date.now()}`, // Provide a unique receipt ID
-                });
-
-                // Save the order details to your database
-                order.razorpayOrderId = razorpayOrder.id;
-
-                // Redirect the user to the Razorpay checkout page
-                return res.render("users/razorpay", {
-                    activePage: "shopingCart", 
-                    order: razorpayOrder,
-                    key_id: process.env.RAZORPAY_ID_KEY,
-                    user: userData
-                });
-            } else {
-                if (userData.wallet.balance < userData.totalCartAmount) {
-                    const errorMessage = "Insufficient wallet balance";
-                    return res.redirect(`/checkout?error=${encodeURIComponent(errorMessage)}`);
-                } else {
-                    await order.save()
-                    userData.wallet.balance -= userData.totalCartAmount;
-                    const transactionData = {
-                        amount: userData.totalCartAmount,
-                        description: 'Order placed.',
-                        type: 'Debit',
+                const products = userData.cart.map((cartItem) => {
+                    return {
+                        product: cartItem.product, // Product reference
+                        quantity: cartItem.quantity, // Quantity
+                        total: cartItem.total,
                     };
-                    userData.wallet.transactions.push(transactionData);
+                });
+    
+                const order = new Order({
+                    user: req.session.user_id,
+                    products: products,
+                    totalAmount: req.body.totalAmount,
+                    paymentMethod: selectedPaymentOptions,
+                    deliveryAddress: {
+                        _id: selectAddress._id,
+                        userId: userData._id,
+                        name: selectAddress.name,
+                        mobile: selectAddress.mobile,
+                        country: selectAddress.country,
+                        state: selectAddress.state,
+                        district: selectAddress.district,
+                        city: selectAddress.city,
+                        pincode: selectAddress.pincode,
+                        address: selectAddress.address
+                    }
+                });
+    
+                if (selectedPaymentOptions === "Cash on delivery") {
+                    await order.save()
+                } else if (selectedPaymentOptions === "Razorpay") {
+                    // Create a Razorpay order
+                    const razorpayOrder = await razorpay.orders.create({
+                        amount: userData.totalCartAmount * 100, // Total amount in paise
+                        currency: 'INR', // Currency code (change as needed)
+                        receipt: `${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}${Date.now()}`, // Provide a unique receipt ID
+                    });
+    
+                    // Save the order details to your database
+                    order.razorpayOrderId = razorpayOrder.id;
+    
+                    // Redirect the user to the Razorpay checkout page
+                    return res.render("users/razorpay", {
+                        activePage: "shopingCart", 
+                        order: razorpayOrder,
+                        key_id: process.env.RAZORPAY_ID_KEY,
+                        user: userData
+                    });
+                } else {
+                    if (userData.wallet.balance < userData.totalCartAmount) {
+                        const errorMessage = "Insufficient wallet balance";
+                        return res.redirect(`/checkout?error=${encodeURIComponent(errorMessage)}`);
+                    } else {
+                        await order.save()
+                        userData.wallet.balance -= userData.totalCartAmount;
+                        const transactionData = {
+                            amount: userData.totalCartAmount,
+                            description: 'Order placed.',
+                            type: 'Debit',
+                        };
+                        userData.wallet.transactions.push(transactionData);
+                        // stock update
+                        for (let i = 0; i < userData.cart.length; i++) {
+    
+                            const changeStock = await Product.findById(userData.cart[i].product)
+    
+                            await Product.updateOne({ _id: changeStock._id }, { stock: changeStock.stock - userData.cart[i].quantity })
+    
+                        }
+    
+                        userData.cart = [];
+                        userData.totalCartAmount = 0;
+                    }
+                }
+    
+    
+                if (selectedPaymentOptions === "Wallet") {
                     // stock update
                     for (let i = 0; i < userData.cart.length; i++) {
-
+    
                         const changeStock = await Product.findById(userData.cart[i].product)
-
+    
                         await Product.updateOne({ _id: changeStock._id }, { stock: changeStock.stock - userData.cart[i].quantity })
-
+    
                     }
-
+    
                     userData.cart = [];
                     userData.totalCartAmount = 0;
                 }
-            }
-
-
-            if (selectedPaymentOptions === "Wallet") {
-                // stock update
-                for (let i = 0; i < userData.cart.length; i++) {
-
-                    const changeStock = await Product.findById(userData.cart[i].product)
-
-                    await Product.updateOne({ _id: changeStock._id }, { stock: changeStock.stock - userData.cart[i].quantity })
-
+    
+                if (selectedPaymentOptions === "Razorpay" || selectedPaymentOptions === "Cash on delivery") {
+                    // stock update
+                    for (let i = 0; i < userData.cart.length; i++) {
+    
+                        const changeStock = await Product.findById(userData.cart[i].product)
+    
+                        await Product.updateOne({ _id: changeStock._id }, { stock: changeStock.stock - userData.cart[i].quantity })
+    
+                    }
+    
+                    userData.cart = [];
+                    userData.totalCartAmount = 0;
                 }
-
-                userData.cart = [];
-                userData.totalCartAmount = 0;
-            }
-
-            if (selectedPaymentOptions === "Razorpay" || selectedPaymentOptions === "Cash on delivery") {
-                // stock update
-                for (let i = 0; i < userData.cart.length; i++) {
-
-                    const changeStock = await Product.findById(userData.cart[i].product)
-
-                    await Product.updateOne({ _id: changeStock._id }, { stock: changeStock.stock - userData.cart[i].quantity })
-
+    
+                const currentUsedCoupon = await userData.earnedCoupons.find((coupon) => coupon.coupon.equals(req.body.currentCoupon));
+                if (currentUsedCoupon) {
+                    currentUsedCoupon.isUsed = true;
+                    await Coupon.findByIdAndUpdate(req.body.currentCoupon, { $inc: { usedCount: 1 } });
                 }
+    
+                await userData.save();
+                res.redirect("/order")
 
-                userData.cart = [];
-                userData.totalCartAmount = 0;
+            } else {
+                const errorMessage = "Please select delivery address";
+                res.redirect(`/checkout?error=${encodeURIComponent(errorMessage)}`);
             }
-
-            const currentUsedCoupon = await userData.earnedCoupons.find((coupon) => coupon.coupon.equals(req.body.currentCoupon));
-            if (currentUsedCoupon) {
-                currentUsedCoupon.isUsed = true;
-                await Coupon.findByIdAndUpdate(req.body.currentCoupon, { $inc: { usedCount: 1 } });
-            }
-
-            await userData.save();
-            res.redirect("/order")
 
         } else {
             const errorMessage = "Please select any payment option";
@@ -234,7 +242,7 @@ const getReturnProductForm = async (req, res) => {
         const category = await Category.findById(req.query.category);
         const defaultAddress = await Address.findOne({ userId: req.session.user_id, default: true });
         res.render("users/returnForm", {
-            activePage: "shopingCart", 
+            activePage: "profile", 
             user: req.session.user_id,
             currentUser,
             currentAddress: defaultAddress,
@@ -330,6 +338,56 @@ const cancelOrder = async (req, res) => {
         }
 
         await foundOrder.save();
+        res.redirect("/order");
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+};
+
+const getCancelProductForm = async (req, res) => {
+    try {
+        const currentUser = await User.findById(req.session.user_id);
+        const product = await Product.findById(req.query.product);
+        const category = await Category.findById(req.query.category);
+        const defaultAddress = await Address.findOne({ userId: req.session.user_id, default: true });
+        res.render("users/cancelForm", {
+            activePage: "profile", 
+            user: req.session.user_id,
+            currentUser,
+            currentAddress: defaultAddress,
+            order: req.query.order,
+            category,
+            product,
+            quantity: req.query.quantity,
+            totalPrice: req.query.totalPrice,
+        });
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+};
+
+const requestCancelProduct = async (req, res) => {
+    try {
+        const foundOrder = await Order.findById(req.body.order).populate('products.product');
+        const foundProduct = await Product.findById(req.body.productId);
+        const cancelProduct = new Cancel({
+            user: req.session.user_id,
+            order: foundOrder._id,
+            product: foundProduct._id,
+            quantity: parseInt(req.body.quantity),
+            totalPrice: parseInt(req.body.totalPrice),
+            reason: req.body.reason,
+            address: req.body.address
+        });
+        await cancelProduct.save();
+
+        foundOrder.products.forEach((product) => {
+            if (product.product._id.toString() === foundProduct._id.toString()) {
+                product.cancelRequested = 'Pending';
+            }
+        });
+        await foundOrder.save();
+
         res.redirect("/order");
     } catch (error) {
         res.render("error/internalError", { error })
@@ -434,14 +492,55 @@ const applyCoupon = async (req, res) => {
     }
 };
 
+const submitReview = async (req, res) => {
+
+    // const product = await Products.findById(productId);
+    let product = await Product.findOne({ _id: req.body.productId }).populate({
+      path: 'rating.customer',
+      model: 'User' // Assuming 'User' is the model name for users
+    });
+    
+    try {
+      const user = await User.findOne({ _id: req.session.user_id });
+    
+      const newRating = req.body.rating;
+      const newReview = req.body.review;
+  
+      const existingRating = product.rating.find(
+        (rating) => rating.customer.equals(user._id)
+      );
+  
+      if (existingRating) {
+  
+        existingRating.rate = newRating;
+        existingRating.review = newReview;
+      } else {
+  
+        product.rating.push({
+          customer:user._id,
+          rate: newRating,
+          review: newReview,
+        });
+      }
+      await product.save();
+  
+      res.redirect('/order');
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+};
+
 module.exports = {
     orderProduct,
     saveRzpOrder,
     loadOrder,
     getReturnProductForm,
     requestReturnProduct,
+    getCancelProductForm,
+    requestCancelProduct,
     cancelOrder,
     getWallet,
     getCoupons,
     applyCoupon,
+    submitReview,
 }

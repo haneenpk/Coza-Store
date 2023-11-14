@@ -10,6 +10,16 @@ const express = require("express")
 const app = express()
 app.use(noCache());
 
+const session = require("express-session")
+
+const config = require("./config/config")
+
+app.use(session({
+    secret: config.sessionSecret,
+    resave: false,
+    saveUninitialized: true
+}))
+
 app.use(methodOveride("_method"))
 
 app.use(express.static("public"))

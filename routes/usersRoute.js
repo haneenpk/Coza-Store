@@ -1,14 +1,5 @@
 const express = require("express")
 const usersRoute = express()
-const session = require("express-session")
-
-const config = require("../config/config")
-
-usersRoute.use(session({
-    secret: config.sessionSecret,
-    resave: false,
-    saveUninitialized: true
-}))
 
 const auth = require("../middleware/auth")
 
@@ -144,7 +135,7 @@ usersRoute.get("/select-address", auth.isLogin, cartCheckoutController.selectAdd
 
 usersRoute.post("/order-product", auth.isLogin, orderController.orderProduct)
 
-usersRoute.post("/save-rzporder", auth.isLogin, orderController.saveRzpOrder);
+usersRoute.post("/save-rzporder", auth.isLogin, orderController.saveRzpOrder)
 
 usersRoute.get("/order", auth.isLogin, orderController.loadOrder)
 
@@ -152,7 +143,7 @@ usersRoute.get("/return-product", auth.isLogin, orderController.getReturnProduct
 
 usersRoute.post("/return-product", auth.isLogin, orderController.requestReturnProduct)
 
-usersRoute.post("/cancel-order", auth.isLogin, orderController.cancelOrder)
+// usersRoute.post("/cancel-order", auth.isLogin, orderController.cancelOrder)
 
 // Wallet
 
@@ -162,7 +153,15 @@ usersRoute.get("/wallet", auth.isLogin, orderController.getWallet)
 
 usersRoute.get("/coupons", auth.isLogin, orderController.getCoupons)
 
-usersRoute.post("/apply-coupon", auth.isLogin, orderController.applyCoupon);
+usersRoute.post("/apply-coupon", auth.isLogin, orderController.applyCoupon)
+
+// Review
+
+usersRoute.post("/submitReview", auth.isLogin, orderController.submitReview)
+
+usersRoute.get("/cancel-order", auth.isLogin, orderController.getCancelProductForm)
+
+usersRoute.post("/cancel-order", auth.isLogin, orderController.requestCancelProduct)
 
 
 usersRoute.use((req, res) => {

@@ -19,7 +19,7 @@ const loadHome = async (req, res) => {
     if (category) {
       queryFilters.category = category;
     }
-
+    
     const products = await Product.find(queryFilters)
       .skip((page - 1) * productsPerPage)
       .limit(productsPerPage)
@@ -123,7 +123,7 @@ const loadProductDetail = async (req, res) => {
             }
         )
 
-        const productData = await Product.findById(productIdToCheck)
+        const productData = await Product.findById(productIdToCheck).populate('rating.customer');
 
         if (check) {
             res.render("./users/product-detail", { activePage: "", products: productData, user: req.session.user_id, message: "already exist in a cart" })

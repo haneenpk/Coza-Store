@@ -34,20 +34,25 @@
             <p class="text-black">
               Delivery: <%= order.deliveryDate.toLocaleDateString() %><br>
               <% if (!order.products.isCancelled) { %>
-                <strong>Status: 
+              <strong>Status:
                 <% if (order.products.returnRequested==="Completed") { %>
-                  <span>Product returned</span>
+                <span>Product returned</span>
                 <% } else { %>
-                  <% if (order.status === "Delivered") { %>
-                    <span class="text-success"><%= order.status %></span>
-                    </p>
-                  <% } else { %>
-                  <span><%= order.status %></span>
-                  <% } %>
-                <% } %>
-              </strong>
-              <% } %>
+                <% if (order.status === "Delivered") { %>
+                <span class="text-success"><%= order.status %></span>
             </p>
+            <% } else { %>
+            <span><%= order.status %></span>
+            <% } %>
+            <% } %>
+            </strong>
+            <% } %>
+            </p>
+            <% if (order.status === "Delivered" && order.products.returnRequested !== "Completed") { %>
+            <button type="button" class="btn btn-sm btn-outline-info mt-3" data-toggle="modal" data-target="#reviewModal" data-product-id="<%= order.orderedProducts[0]._id %>" data-initial-rating="<%= order.orderedProducts[0].initialRating %>">
+              Review
+            </button>
+            <% } %>
           </div>
         </div>
       </div>
@@ -57,16 +62,31 @@
           Order Cancelled
         </p>
         <% } else { %>
-        <% if (order.status==='Processing' ) { %>
-        <p class="ml-3">
-        <form action="/cancel-order" method="post" id="orders-form">
-          <input type="hidden" name="orderId" value="<%= order._id %>">
-          <input type="hidden" name="productId" value="<%= order.orderedProducts[0]._id %>">
-          <button type="submit" class="btn btn-sm btn-outline-danger mb-3">
-            Cancel
-          </button>
-        </form>
-        </p>
+        <% if (order.status==='Processing' || order.status==='Shipped') { %>
+          <% if (order.products.cancelRequested === 'Nil') { %>
+            <p class="ml-3">
+              <a href="/cancel-order?order=<%= order._id %>&product=<%= order.orderedProducts[0]._id %>&category=<%= order.orderedProducts[0].category %>&quantity=<%= order.products.quantity %>&totalPrice=<%= order.products.total %>" class="btn btn-sm btn-outline-primary mb-3">
+                Cancel
+              </a>
+            </p>
+          <% } else { %>
+            <% if (order.products.cancelRequested === "Pending") { %>
+              <p class="ml-4">Cancel Request:
+                <span class="text-info">Pending</span>
+              </p>
+              <% } else if (order.products.cancelRequested === "Rejected") { %>
+              <p class="ml-4">Cancel
+                Request: <span class="text-danger">Rejected</span>
+              </p>
+              <% } else if (order.products.cancelRequested === "Approved") { %>
+              <p class="ml-4">Cancel
+                Request: <span class="text-success">Approved</span>
+              </p>
+              <% } else if (order.products.cancelRequested === "Completed") { %>
+              <span class="text-info ml-4">Order Cancelled</span>
+              </p>
+              <% } %>
+          <% } %>
         <% } else if (order.status==='Delivered' ) { %>
         <% const currentDate=new Date(); %>
         <% const deliveryDate=new Date(order.deliveryDate); %>
@@ -124,175 +144,41 @@
   </div>
 </section>
 
-<!-- Cancel Order Modal -->
-<div class="modal fade" id="cancelOrderModal" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="cancelOrderModalLabel">Confirm Cancel Order</h5>
+        <h5 class="modal-title" id="reviewModalLabel">Product Review</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        Are you sure you want to cancel your order?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirmCancelOrder">
-          Cancel Order
-        </button>
-      </div>
+      <form action="/submitReview" method="post">
+        <div class="modal-body">
+
+          <!-- Hidden input for Product ID -->
+          <input type="hidden" id="productId" name="productId" value="productId">
+
+          <!-- Product Rating -->
+          <label for="rating">Rating:</label>
+          <div class="rating" id="productRating">
+            <!-- Initial star rating will be set dynamically -->
+          </div>
+
+          <!-- Review Textarea -->
+          <label for="review">Review:</label>
+          <textarea class="form-control" id="review" name="review" rows="3"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit Review</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
-<!-- Footer -->
-<footer class="bg3 p-t-75 p-b-32">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6 col-lg-3 p-b-50">
-        <h4 class="stext-301 cl0 p-b-30">
-          Categories
-        </h4>
-
-        <ul>
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-              Women
-            </a>
-          </li>
-
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-              Men
-            </a>
-          </li>
-
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-              Shoes
-            </a>
-          </li>
-
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-              Watches
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="col-sm-6 col-lg-3 p-b-50">
-        <h4 class="stext-301 cl0 p-b-30">
-          Help
-        </h4>
-
-        <ul>
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-              Track Order
-            </a>
-          </li>
-
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-              Returns
-            </a>
-          </li>
-
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-              Shipping
-            </a>
-          </li>
-
-          <li class="p-b-10">
-            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-              FAQs
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="col-sm-6 col-lg-3 p-b-50">
-        <h4 class="stext-301 cl0 p-b-30">
-          GET IN TOUCH
-        </h4>
-
-        <p class="stext-107 cl7 size-201">
-          Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879
-        </p>
-
-        <div class="p-t-27">
-          <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-            <i class="fa fa-facebook"></i>
-          </a>
-
-          <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-            <i class="fa fa-instagram"></i>
-          </a>
-
-          <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-            <i class="fa fa-pinterest-p"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-lg-3 p-b-50">
-        <h4 class="stext-301 cl0 p-b-30">
-          Newsletter
-        </h4>
-
-        <form>
-          <div class="wrap-input1 w-full p-b-4">
-            <input class="input1 bg-none plh1 stext-107 cl7" type="text" name="email" placeholder="email@example.com">
-            <div class="focus-input1 trans-04"></div>
-          </div>
-
-          <div class="p-t-18">
-            <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
-              Subscribe
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="p-t-40">
-      <div class="flex-c-m flex-w p-b-18">
-        <a href="#" class="m-all-1">
-          <img src="images/icons/icon-pay-01.png" alt="ICON-PAY">
-        </a>
-
-        <a href="#" class="m-all-1">
-          <img src="images/icons/icon-pay-02.png" alt="ICON-PAY">
-        </a>
-
-        <a href="#" class="m-all-1">
-          <img src="images/icons/icon-pay-03.png" alt="ICON-PAY">
-        </a>
-
-        <a href="#" class="m-all-1">
-          <img src="images/icons/icon-pay-04.png" alt="ICON-PAY">
-        </a>
-
-        <a href="#" class="m-all-1">
-          <img src="images/icons/icon-pay-05.png" alt="ICON-PAY">
-        </a>
-      </div>
-
-      <p class="stext-107 cl6 txt-center">
-        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-        Copyright &copy;<script>
-          document.write(new Date().getFullYear());
-        </script> All rights reserved | Made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> &amp; distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-
-      </p>
-    </div>
-  </div>
-</footer>
+<%- include('../partials/userFooter') %>
 
 <!--===============================================================================================-->
 <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
@@ -355,6 +241,45 @@
         console.log("uygu", status);
       }
     });
+  }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Font Awesome JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" integrity="sha384-Q6qt6qZCcyAq1WyG0B8voXN1oWoRq9PWBqMlUAqFt8CH4AGilr5S6ENXdeFUZbx" crossorigin="anonymous"></script>
+
+<script>
+  // Function to set the product ID, initial star rating, and initial review when the modal is shown
+  $('#reviewModal').on('show.bs.modal', function(event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var productId = button.data('product-id'); // Extract info from data-* attributes
+    var initialRating = button.data('initial-rating'); // Extract the initial rating
+    var initialReview = button.data('initial-review'); // Extract the initial review
+    $('#productId').val(productId); // Set the product ID in the hidden input
+
+    // Set the initial star rating dynamically
+    setInitialRating(initialRating);
+
+    // Set the initial review content
+    $('#review').val(initialReview);
+  });
+
+  // Function to set the initial star rating
+  function setInitialRating(initialRating) {
+    var ratingDiv = $('#productRating');
+    ratingDiv.empty(); // Clear existing stars
+
+    // Create stars based on the initial rating
+    for (var i = 5; i >= 1; i--) {
+      var star = $('<input type="radio" id="star' + i + '" name="rating" value="' + i + '" /><label for="star' + i + '" title="' + i + ' stars"></label>');
+      if (i <= initialRating) {
+        star.prop('checked', true); // Check the stars up to the initial rating
+      }
+      ratingDiv.append(star);
+    }
   }
 </script>
 

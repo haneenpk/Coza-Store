@@ -1,5 +1,7 @@
+const mongoose = require('mongoose');
 const Order = require("../../models/orderModel")
 const Return = require("../../models/returnProductsModel")
+const Cancel = require("../../models/cancelProductsModel")
 const Product = require("../../models/products")
 const User = require("../../models/usersModel")
 const Coupon = require("../../models/couponModel")
@@ -121,7 +123,7 @@ const getReturnRequests = async (req, res) => {
     }
 };
 
-const returnRequestAction = async (req, res, next) => {
+const returnRequestAction = async (req, res) => {
     try {
         const foundRequet = await Return.findById(req.body.request);
         const foundOrders = await Order.findById(req.body.order);
@@ -168,6 +170,110 @@ const returnRequestAction = async (req, res, next) => {
     }
 };
 
+const getCancelRequests = async (req, res) => {
+    try {
+        const ITEMS_PER_PAGE = 5; // Define the number of items to display per page
+        const page = parseInt(req.query.page) || 1; // Extract the page from the query string
+        const totalRequests = await Cancel.countDocuments(); // Count the total number of return requests
+        const cancelRequests = await Cancel.find()
+            .populate([
+                { path: 'user' },
+                { path: 'order' },
+                { path: 'product' },
+            ])
+            .skip((page - 1) * ITEMS_PER_PAGE) // Calculate the number of items to skip
+            .limit(ITEMS_PER_PAGE); // Define the number of items to display per page
+
+        const totalPages = Math.ceil(totalRequests / ITEMS_PER_PAGE);
+
+        res.render("admin/cancels", {
+            activePage: "order",
+            cancelRequests,
+            totalPages,
+        });
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+}
+
+const returnCancelAction = async (req, res) => {
+    try {
+        console.log("here");
+        const foundCancel = await Cancel.findById(req.body.request);
+        const foundOrders = await Order.findById(req.body.order).populate('products.product');
+        console.log(foundOrders.products[0].product);
+        const currentProduct = foundOrders.products.find((product) => product.product.toString() === req.body.product.toString());
+        console.log(currentProduct);
+        if (req.body.action === "approve") {
+            foundCancel.status = 'Approved';
+            console.log(currentProduct.cancelRequested);
+            currentProduct.cancelRequested = 'Approved';
+        } else if (req.body.action === "Rejected") {
+            foundCancel.status = 'Rejected';
+            currentProduct.cancelRequested = 'Rejected';
+        } else {
+
+            if (foundOrders.paymentMethod !== 'Cash on delivery') {
+                const currentUser = await User.findById(req.session.user_id);
+    
+                if (currentUser) { // Check if currentUser is defined
+                    const refundAmount = currentProduct.total;
+                    currentUser.wallet.balance += refundAmount;
+    
+                    const transactionData = {
+                        amount: refundAmount,
+                        description: 'Order cancelled.',
+                        type: 'Credit',
+                    };
+                    currentUser.wallet.transactions.push(transactionData);
+    
+                    // Save changes to the user's wallet, canceled product, and order
+                    await currentUser.save();
+                } else {
+                    console.log("User not found");
+                }
+            }
+            currentProduct.isCancelled = true;
+    
+            const EditProduct = await Product.findOne({ _id: currentProduct.product._id });
+    
+            const currentStock = EditProduct.stock;
+            EditProduct.stock = currentStock + currentProduct.quantity;
+    
+            await EditProduct.save();
+    
+            // Function to check if all products in the order are cancelled
+            function areAllProductsCancelled(order) {
+                for (const product of order.products) {
+                    if (!product.isCancelled) {
+                        return false; // If any product is not cancelled, return false
+                    }
+                }
+                return true; // All products are cancelled
+            }
+    
+            // Check if all products in the order are cancelled
+            if (areAllProductsCancelled(foundOrders)) {
+                // Update the order status to "Cancelled"
+    
+                foundOrders.totalAmount -= 0
+                foundOrders.status = "Cancelled";
+            }
+    
+            await foundOrders.save();
+            res.redirect("/order");
+
+            foundCancel.status = 'Completed';
+            currentProduct.cancelRequested = 'Completed';
+        }
+        await foundCancel.save();
+        await foundOrders.save();
+        res.redirect('/admin/cancel-requests');
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+};
+
 
 module.exports = {
     loadOrder,
@@ -175,4 +281,6 @@ module.exports = {
     updateOrderCancel,
     getReturnRequests,
     returnRequestAction,
+    getCancelRequests,
+    returnCancelAction,
 }

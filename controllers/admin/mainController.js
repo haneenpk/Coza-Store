@@ -1,11 +1,11 @@
 const PDFDocument = require("pdfkit")
-const User = require("../../models/usersModel")
+const Admin = require("../../models/adminModel")
 const Order = require("../../models/orderModel")
 
 
 const loadDashboard = async (req, res) => {
     try {
-        const admin = await User.findById(req.session.userid);
+        const admin = await Admin.findById(req.session.adminid);
         const today = new Date();
         // Calculate the start and end dates for this month
         const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);

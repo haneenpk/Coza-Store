@@ -27,6 +27,20 @@ const products = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
     },
+    rating: [
+        {
+            customer: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+            },
+            rate: {
+                type: Number
+            },
+            review: {
+                type: String
+            }
+        }
+    ],
 });
 
 module.exports = mongoose.model("Product",products);

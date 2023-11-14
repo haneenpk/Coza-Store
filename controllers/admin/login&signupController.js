@@ -1,4 +1,4 @@
-const User = require("../../models/usersModel")
+const Admin = require("../../models/adminModel")
 const bcrypt = require("bcrypt")
 
 
@@ -17,24 +17,18 @@ const verifyLogin = async (req, res) => {
 
     try {
 
-        const username = req.body.username
+        const username = req.body.name
         const password = req.body.password
 
-        const userData = await User.findOne({ username: username })
+        const adminData = await Admin.findOne({ name: username })
 
-        if (userData) {
+        if (adminData) {
 
-            const passwordMatch = await bcrypt.compare(password, userData.password)
+            const passwordMatch = await bcrypt.compare(password, adminData.password)
 
             if (passwordMatch) {
-
-                if (userData.is_admin === 0) {
-                    res.render("admin/login", { message: "Username and password is incorrect" })
-                } else {
-                    req.session.userid = userData.id;
-                    res.redirect("/admin/dashboard")
-                }
-
+                req.session.adminid = adminData.id;
+                res.redirect("/admin/dashboard")
             } else {
                 res.render("admin/login", { message: "Username and password is incorrect" })
             }

@@ -30,6 +30,11 @@ const orderSchema = mongoose.Schema({
                 enum: ['Nil', 'Pending', 'Approved', 'Rejected', 'Completed'],
                 default: 'Nil',
             },
+            cancelRequested: {
+                type: String,
+                enum: ['Nil', 'Pending', 'Approved', 'Rejected', 'Completed'],
+                default: 'Nil',
+            },
         },
     ],
     totalAmount: {

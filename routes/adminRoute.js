@@ -1,14 +1,6 @@
 const express = require("express")
 const adminRoute = express()
 
-const session = require("express-session")
-const config = require("../config/config")
-adminRoute.use(session({
-    secret:config.adminSessionSecret,
-    resave:false,
-    saveUninitialized:true
-}))
-
 const bodyParser = require("body-parser")
 adminRoute.use(bodyParser.json())
 adminRoute.use(bodyParser.urlencoded({extended:true}))
@@ -97,6 +89,10 @@ adminRoute.get("/return-requests", auth.isLogin, orderController.getReturnReques
 
 adminRoute.post("/return-requests", auth.isLogin, orderController.returnRequestAction)
 
+adminRoute.get("/cancel-requests", auth.isLogin, orderController.getCancelRequests)
+
+adminRoute.post("/cancel-requests", auth.isLogin, orderController.returnCancelAction)
+
 // Order End
 
 // Users
@@ -141,6 +137,6 @@ adminRoute.patch('/uploadPhoto-banner',auth.isLogin, Imagemiddleware.uploadBanne
 
 
 
-adminRoute.get("*",auth.isLogin,mainController.error)
+adminRoute.get("*",mainController.error)
 
 module.exports = adminRoute;

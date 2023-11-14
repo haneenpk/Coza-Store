@@ -124,6 +124,32 @@
         max-height: 280px;
       }
     }
+
+    .rating {
+      display: inline-block;
+      unicode-bidi: bidi-override;
+      direction: rtl;
+    }
+
+    .rating input {
+      display: none;
+    }
+
+    .rating label {
+      display: inline-block;
+      margin: 0 5px;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #ccc; /* default color for unselected stars */
+    }
+
+    .rating label:before {
+      content: '\2605'; /* Unicode character for a star */
+    }
+
+    .rating input:checked ~ label {
+      color: #ffc107; /* color for selected stars */
+    }
   </style>
 </head>
 

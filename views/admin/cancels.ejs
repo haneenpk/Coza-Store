@@ -252,121 +252,127 @@
 
             <div class="container-xxl flex-grow-1 container-p-y">
 
-              <form action="/admin/order" id="search">
-                <div class="row d-flex">
-                  <div class="col-10">
-                  <!-- Status filter dropdown -->
-                  <select name="status" class="form-select">
-                   <option value="">All Status</option>
-                   <option value="Processing">Processing</option>
-                   <option value="Shipped">Shipped</option>
-                   <option value="Delivered">Delivered</option>
-                   <option value="Cancelled">Cancelled</option>
-                  </select>
-                  </div>
-                  <button type="submit" class="btn btn-primary col-2">Apply Filters</button>
-                </div>           
-            </form>
+                <a href="/admin/order"><button style="margin-top: 20px;" type="button" class="btn btn-primary btn-lg mb-3">Back to order</button></a> 
 
-              <!-- Basic Bootstrap Table -->
-              <div class="card" style="margin-top: 20px;">
-                <div class="d-flex">
-                  <a href="/admin/return-requests" class="mt-3" style="margin-left: 25px;">View Retuen Request</a>
-                  <a href="/admin/cancel-requests" class="mt-3" style="margin-left: 35px;">View Cancel Request</a>
-                </div>
-                <h5 class="card-header" style="display: inline;">Orders</h5>
-
-                <div class="table-responsive text-nowrap">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>Customer</th>
-                        <th>Products <br> name & quantity</th>
-                        <th>Address</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Payment Option</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-border-bottom-0">
-                      <%
-                         if (orders.length > 0) {
-                            for (let i = 0; i < orders.length; i++) {
-                              %>
-                               <tr>
-                                 <td><%= orders[i].user.username %><br><%= orders[i].user.email %></td>
-                                 <td>
-                                    <% for ( let j = 0; j < orders[i].products.length; j++ ) { %>
-                                      <%= orders[i].products[j].product.name %> : <%= orders[i].products[j].quantity %><br>
-                                    <% } %>
+                <div class="col-lg-12 grid-margin stretch-card">
+                    <div class="card">
+                      
+                        <div class="d-flex justify-content-between" style="margin-left: 25px; margin-top: 25px;">
+                          <h4 class="card-title">Cancel Requests</h4>
+                        </div>
+                        <div class="table-responsive">
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th>
+                                  User
+                                </th>
+                                <th>
+                                  Details
+                                </th>
+                                <th>
+                                  Cancel To
+                                </th>
+                                <th>
+                                  Reason
+                                </th>
+                                <th>
+                                  Actions
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% if (!cancelRequests.length) { %>
+                              <tr>
+                                <td colspan="5">No requests found.</td>
+                              </tr>
+                              <% } else { %>
+                              <% cancelRequests.forEach((request)=> { %>
+                              <tr>
+                                <td>
+                                  <%= request.user.username %><br>
+                                  <p class="text-dark">
+                                    <%= request.user.email %>
+                                  </p><br>
+                                  <%= request.user.mobile %>
                                 </td>
-                                 <td><%= orders[i].deliveryAddress.name %>,<br>
-                                    <%= orders[i].deliveryAddress.mobile %>,
-                                    <%= orders[i].deliveryAddress.pincode %>,<br>
-                                    <%= orders[i].deliveryAddress.address %>,<br>
-                                    <%= orders[i].deliveryAddress.city %>,
-                                    <%= orders[i].deliveryAddress.district %>,<br>
-                                    <%= orders[i].deliveryAddress.state %>,
-                                    <%= orders[i].deliveryAddress.country %>
-                                 </td>
-                                 <td>₹<%= orders[i].totalAmount %></td>
-                                 <td>
-                                    <% if (orders[i].status === "Cancelled"){ %>
-                                        <h6 class="text-danger">Canceled</h6>
-                                    <% } else if (orders[i].status === "Delivered"){ %>
-                                        <h6 class="text-success">Delivered</h6>
+                                <td>
+                                  <div>
+                                    <div class="border-bottom mb-3">
+                                      <span class="h6 text-uppercase">
+                                        <%= request.product.name %>
+                                      </span><br>
+                                      Total price: ₹<%= request.totalPrice %> <br>
+                                      Quantity: <%= request.quantity %> <br>
+                                    </div>
+                                    Requested Date: <%= request.createdAt.toLocaleDateString() %>
+                                  </div>
+                                </td>
+                                <td>
+                                  <%= request.order.deliveryAddress.city %>,
+                                  <%= request.order.deliveryAddress.pincode%>,
+                                  <%= request.order.deliveryAddress.district %>,
+                                  <%= request.order.deliveryAddress.state %>,<br>
+                                  <%= request.order.deliveryAddress.country %>
+                                </td>
+                                <td>
+                                  <%= request.reason %>
+                                </td>
+                                <td>
+                                  <div class="d-flex justify-content-between">
+                                    <% if (request.status==="Completed" ) { %>
+                                    <p class="text-success font-weight-bolder">Completed</p>
                                     <% } else { %>
-                                        <div class="btn-group">
-                                            <button type="button"
-                                                class="btn btn-danger dropdown-toggle dropdown-toggle-split"
-                                                data-toggle="dropdown"
-                                                aria-haspopup="true"
-                                                aria-expanded="false">
-                                                <%= orders[i].status %> 
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item"
-                                                    href="/admin/order/action-update?action=Processing&orderId=<%= orders[i]._id %>">Processing</a>
-                                                <a class="dropdown-item"
-                                                    href="/admin/order/action-update?action=Shipped&orderId=<%= orders[i]._id %>">Shipped</a>
-                                                <a class="dropdown-item"
-                                                    href="/admin/order/action-update?action=Delivered&orderId=<%= orders[i]._id %>">Delivered</a>
-                                                <a class="dropdown-item"
-                                                    href="/admin/order-cancel?action=Cancelled&orderId=<%= orders[i]._id %>">Cancel order</a>
-                                            </div>
+                                    <div class="btn-group">
+                                        <button type="button"
+                                            class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+                                            data-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="false">
+                                            <%= request.status %> 
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <form action="/admin/cancel-requests" method="post">
+                                                <input type="hidden" name="action" value="approve">
+                                                <input type="hidden" name="request" value="<%= request._id %>">
+                                                <input type="hidden" name="order" value="<%= request.order._id %>">
+                                                <input type="hidden" name="product" value="<%= request.product._id %>">
+                                                <button type="submit" class="dropdown-item text-warning">
+                                                  Approve
+                                                </button>
+                                            </form>
+                                            <form action="/admin/cancel-requests" method="post" class="ml-1" id="action-form">
+                                                <input type="hidden" name="action" value="reject">
+                                                <input type="hidden" name="request" value="<%= request._id %>">
+                                                <input type="hidden" name="order" value="<%= request.order._id %>">
+                                                <input type="hidden" name="product" value="<%= request.product._id %>">
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                  Reject
+                                                </button>
+                                            </form>
+                                            <form action="/admin/cancel-requests" method="post" class="ml-1" id="action-form">
+                                                <input type="hidden" name="action" value="Completed">
+                                                <input type="hidden" name="request" value="<%= request._id %>">
+                                                <input type="hidden" name="order" value="<%= request.order._id %>">
+                                                <input type="hidden" name="product" value="<%= request.product._id %>">
+                                                <button type="submit" class="dropdown-item text-success">
+                                                  Completed
+                                                </button>
+                                            </form>
                                         </div>
-                                    <%}%>
-                                 </td>
-                                 <td><%= orders[i].paymentMethod %></td>
-                               </tr>
-                              <%          
-                            }
-                         } else {
-                           %>
-                            <tr>
-                              <td colspan="6">Products Not Found</td>
-                            </tr>
-                           <%
-                         }
-                      %>
-                      <!-- Add more rows as needed -->
-                    </tbody>
-                  </table>
+                                    </div>
+                                    <% } %>
+                                  </div>
+                                </td>
+                              </tr>
+                              <% }) %>
+                              <% } %>
+                            </tbody>
+                          </table>
+                        </div>
+                      
+                    </div>
                 </div>
-              </div>
-              <!--/ Basic Bootstrap Table -->
-
-              <!-- Pagination controls -->
-              <div class="pagination" style="margin-top: 15px;">
-
-                  <% for (let i = 1; i <= totalPages; i++) { %>
-                    <a href="?page=<%= i %>" class="page-link"><%= i %></a>
-                  <% } %>
-
-              </div>
-
-
-
             </div>
             <!-- / Content -->
 
