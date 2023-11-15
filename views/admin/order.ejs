@@ -297,7 +297,11 @@
                                  <td><%= orders[i].user.username %><br><%= orders[i].user.email %></td>
                                  <td>
                                     <% for ( let j = 0; j < orders[i].products.length; j++ ) { %>
-                                      <%= orders[i].products[j].product.name %> : <%= orders[i].products[j].quantity %><br>
+                                      <% if(orders[i].products[j].isCancelled === false) { %>
+                                        <%= orders[i].products[j].product.name %> : <%= orders[i].products[j].quantity %><br>
+                                      <% } else { %>
+                                        <del><span class="text-danger"><%= orders[i].products[j].product.name %> : <%= orders[i].products[j].quantity %></span></del><br>
+                                      <% } %>
                                     <% } %>
                                 </td>
                                  <td><%= orders[i].deliveryAddress.name %>,<br>
@@ -318,6 +322,7 @@
                                     <% } else { %>
                                         <div class="btn-group">
                                             <button type="button"
+                                                style="width: 89px; font-size: 13px;"
                                                 class="btn btn-danger dropdown-toggle dropdown-toggle-split"
                                                 data-toggle="dropdown"
                                                 aria-haspopup="true"
@@ -330,9 +335,7 @@
                                                 <a class="dropdown-item"
                                                     href="/admin/order/action-update?action=Shipped&orderId=<%= orders[i]._id %>">Shipped</a>
                                                 <a class="dropdown-item"
-                                                    href="/admin/order/action-update?action=Delivered&orderId=<%= orders[i]._id %>">Delivered</a>
-                                                <a class="dropdown-item"
-                                                    href="/admin/order-cancel?action=Cancelled&orderId=<%= orders[i]._id %>">Cancel order</a>
+                                                    href="/admin/order/action-update?action=Delivered&orderId=<%= orders[i]._id %>">Delivered</a>              
                                             </div>
                                         </div>
                                     <%}%>

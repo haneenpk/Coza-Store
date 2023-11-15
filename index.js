@@ -29,7 +29,7 @@ const adminRoute = require("./routes/adminRoute")
 app.use("/admin",adminRoute)
 
 //for user routes
-const usersRoute = require("./routes/usersRoute");
+const usersRoute = require("./routes/usersRoute")
 app.use("/",usersRoute)
 
 const PORT = process.env.PORT

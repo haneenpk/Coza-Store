@@ -83,8 +83,6 @@ adminRoute.get("/order",auth.isLogin,orderController.loadOrder)
 
 adminRoute.get("/order/action-update", auth.isLogin, orderController.updateActionOrder)
 
-adminRoute.get("/order-cancel", auth.isLogin, orderController.updateOrderCancel)
-
 adminRoute.get("/return-requests", auth.isLogin, orderController.getReturnRequests)
 
 adminRoute.post("/return-requests", auth.isLogin, orderController.returnRequestAction)

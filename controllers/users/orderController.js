@@ -396,8 +396,10 @@ const requestCancelProduct = async (req, res) => {
 
 const getWallet = async (req, res) => {
     try {
-        // fix sorting
-        const currentUser = await User.findById(req.session.user_id).sort({ 'wallet.transactions.timestamp': -1 });
+        const currentUser = await User.findById(req.session.user_id);
+        // Sort transactions by timestamp in descending order
+        currentUser.wallet.transactions.sort((a, b) => b.timestamp - a.timestamp);
+
         res.render("users/wallet", {
             activePage: "profile", 
             user: req.session.user_id,

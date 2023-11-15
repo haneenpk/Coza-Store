@@ -374,8 +374,17 @@
                       
                     </div>
                 </div>
+                <!-- Pagination controls -->
+                <div class="pagination" style="margin-top: 15px;">
+
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+                    <% } %>
+                          
+                </div>
             </div>
             <!-- / Content -->
+
 
             <div class="content-backdrop fade"></div>
           </div>

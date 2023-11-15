@@ -161,7 +161,6 @@ const loadSalesReport = async (req, res) => {
         const filteredOrders = await Order.aggregate([
             {
                 $match: {
-                    status: "Delivered",
                     orderDate: {
                         $gte: startOfMonth,
                         $lte: endOfMonth

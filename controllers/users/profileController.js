@@ -67,40 +67,55 @@ const EditProfile = async (req, res) => {
         if (userData) {
 
             // Validate email
-            const emailRegex = /^\S+@\S+\.\S+$/;
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
             if (!emailRegex.test(email)) {
                 return res.render("users/edit-profile", {
+                    activePage: "profile",
                     user: req.session.user_id,
                     userProfile: userData,
-                    error: "Invalid email address.",
+                    error: "Enter a valid Gmail address.",
                 });
             }
 
             // Validate mobile (10 digits)
             if (!/^\d{10}$/.test(mobile)) {
                 return res.render("users/edit-profile", {
+                    activePage: "profile",
                     user: req.session.user_id,
                     userProfile: userData,
                     error: "Mobile number should be 10 digits.",
                 });
             }
 
-            if (userData.username !== username || userData.email !== email || userData.mobile !== parseInt(mobile)) {
-                if (userData.username !== username) {
-                    await User.updateOne({ _id: id }, { $set: { username } })
-                }
-                if (userData.email !== email) {
-                    await User.updateOne({ _id: id }, { $set: { email } })
-                }
-                if (userData.mobile !== parseInt(mobile)) {
-                    await User.updateOne({ _id: id }, { $set: { mobile } })
-                }
+            // Validate username (no white spaces, no symbols, no numbers)
+            if (/^\S*$/.test(username) && /^[a-zA-Z]+$/.test(username)) {
+                if (userData.username !== username || userData.email !== email || userData.mobile !== parseInt(mobile)) {
+                    if (userData.username !== username) {
+                        await User.updateOne({ _id: id }, { $set: { username } })
+                    }
+                    if (userData.email !== email) {
+                        await User.updateOne({ _id: id }, { $set: { email } })
+                    }
+                    if (userData.mobile !== parseInt(mobile)) {
+                        await User.updateOne({ _id: id }, { $set: { mobile } })
+                    }
 
-                res.redirect("/profile")
+                    res.redirect("/profile")
+
+                } else {
+                    res.render("users/edit-profile", { activePage: "profile", user: req.session.user_id, userProfile: userData, error: "You have to make some changes" })
+                }
 
             } else {
-                res.render("users/edit-profile", { activePage: "profile", user: req.session.user_id, userProfile: userData, error: "You have to make some changes" })
+                return res.render("users/edit-profile", {
+                    activePage: "profile",
+                    user: req.session.user_id,
+                    userProfile: userData,
+                    error: "Username should only contain alphabetical characters and no spaces.",
+                });
             }
+
+
         }
 
     } catch (error) {

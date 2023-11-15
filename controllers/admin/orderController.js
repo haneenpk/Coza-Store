@@ -99,17 +99,19 @@ const updateOrderCancel = async (req, res) => {
 
 const getReturnRequests = async (req, res) => {
     try {
-        const ITEMS_PER_PAGE = 5; // Define the number of items to display per page
-        const page = parseInt(req.query.page) || 1; // Extract the page from the query string
-        const totalRequests = await Return.countDocuments(); // Count the total number of return requests
+        const ITEMS_PER_PAGE = 5;
+        const page = parseInt(req.query.page) || 1;
+        const totalRequests = await Return.countDocuments();
+
         const returnRequests = await Return.find()
             .populate([
                 { path: 'user' },
                 { path: 'order' },
                 { path: 'product' },
             ])
-            .skip((page - 1) * ITEMS_PER_PAGE) // Calculate the number of items to skip
-            .limit(ITEMS_PER_PAGE); // Define the number of items to display per page
+            .sort({ createdAt: -1 }) // Sort by createdAt in descending order (newest first)
+            .skip((page - 1) * ITEMS_PER_PAGE)
+            .limit(ITEMS_PER_PAGE);
 
         const totalPages = Math.ceil(totalRequests / ITEMS_PER_PAGE);
 
@@ -131,7 +133,7 @@ const returnRequestAction = async (req, res) => {
         if (req.body.action === "approve") {
             foundRequet.status = 'Approved';
             currentProduct.returnRequested = 'Approved';
-        } else if (req.body.action === "Rejected") {
+        } else if (req.body.action === "reject") {
             foundRequet.status = 'Rejected';
             currentProduct.returnRequested = 'Rejected';
         } else {
@@ -172,17 +174,19 @@ const returnRequestAction = async (req, res) => {
 
 const getCancelRequests = async (req, res) => {
     try {
-        const ITEMS_PER_PAGE = 5; // Define the number of items to display per page
-        const page = parseInt(req.query.page) || 1; // Extract the page from the query string
-        const totalRequests = await Cancel.countDocuments(); // Count the total number of return requests
+        const ITEMS_PER_PAGE = 5;
+        const page = parseInt(req.query.page) || 1;
+        const totalRequests = await Cancel.countDocuments();
+
         const cancelRequests = await Cancel.find()
             .populate([
                 { path: 'user' },
                 { path: 'order' },
                 { path: 'product' },
             ])
-            .skip((page - 1) * ITEMS_PER_PAGE) // Calculate the number of items to skip
-            .limit(ITEMS_PER_PAGE); // Define the number of items to display per page
+            .sort({ createdAt: -1 }) // Sort by createdAt in descending order
+            .skip((page - 1) * ITEMS_PER_PAGE)
+            .limit(ITEMS_PER_PAGE);
 
         const totalPages = Math.ceil(totalRequests / ITEMS_PER_PAGE);
 
@@ -198,23 +202,17 @@ const getCancelRequests = async (req, res) => {
 
 const returnCancelAction = async (req, res) => {
     try {
-        console.log("here");
-        const foundCancel = await Cancel.findById(req.body.request);
+        const foundCancel = await Cancel.findById(req.body.request).populate('user');
         const foundOrders = await Order.findById(req.body.order).populate('products.product');
-        console.log(foundOrders.products[0].product);
-        const currentProduct = foundOrders.products.find((product) => product.product.toString() === req.body.product.toString());
-        console.log(currentProduct);
+        const currentProduct = foundOrders.products.find((product) => product.product._id.toString() === req.body.product.toString())
         if (req.body.action === "approve") {
             foundCancel.status = 'Approved';
-            console.log(currentProduct.cancelRequested);
             currentProduct.cancelRequested = 'Approved';
-        } else if (req.body.action === "Rejected") {
-            foundCancel.status = 'Rejected';
-            currentProduct.cancelRequested = 'Rejected';
         } else {
 
             if (foundOrders.paymentMethod !== 'Cash on delivery') {
-                const currentUser = await User.findById(req.session.user_id);
+                const currentUser = await User.findById(foundCancel.user._id);
+                console.log(currentUser);
     
                 if (currentUser) { // Check if currentUser is defined
                     const refundAmount = currentProduct.total;
@@ -229,16 +227,21 @@ const returnCancelAction = async (req, res) => {
     
                     // Save changes to the user's wallet, canceled product, and order
                     await currentUser.save();
+    
                 } else {
-                    console.log("User not found");
+                    res.render("error/internalError", { error:"user not found" })
                 }
             }
+            foundCancel.status = 'Completed';
             currentProduct.isCancelled = true;
+            currentProduct.cancelRequested = 'Completed'
     
             const EditProduct = await Product.findOne({ _id: currentProduct.product._id });
     
             const currentStock = EditProduct.stock;
             EditProduct.stock = currentStock + currentProduct.quantity;
+
+            foundOrders.totalAmount -= currentProduct.total
     
             await EditProduct.save();
     
@@ -260,11 +263,6 @@ const returnCancelAction = async (req, res) => {
                 foundOrders.status = "Cancelled";
             }
     
-            await foundOrders.save();
-            res.redirect("/order");
-
-            foundCancel.status = 'Completed';
-            currentProduct.cancelRequested = 'Completed';
         }
         await foundCancel.save();
         await foundOrders.save();

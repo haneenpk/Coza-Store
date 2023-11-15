@@ -8,15 +8,15 @@
         <a href="/profile" class="btn btn-primary">Back to Profile</a>
         <div style="margin-top: 10px; text-align: center; font-family: 'Poppins',sans-serif;">
           <% 
-                    if(typeof error !== "undefined"){
-                       %>
-          <span style="color:#f00; font-weight: bold;"><%= error %></span>
+            if(typeof error !== "undefined"){
+          %>
+          <span id="error-message" style="color:#f00; font-weight: bold;"><%= error %></span>
           <%
-                     }
-                    %>
+            }
+          %>
         </div>
 
-        <form style="margin-top: 15px;" action="/add-address" method="post">
+        <form style="margin-top: 15px;" action="/add-address" method="post" onsubmit="return validateForm()">
           <div class="mb-3">
             <label for="username" class="form-label">Name</label>
             <input type="text" class="form-control" id="username" placeholder="Your Name" name="name" required>
@@ -107,6 +107,38 @@
 <!--===============================================================================================-->
 <script src="js/main.js"></script>
 
+<!-- Form Validation Script -->
+<script>
+  // Function to check if a string is only whitespace
+  function isWhitespace(str) {
+    return !str.trim();
+  }
+
+  // Function to validate the form
+  function validateForm() {
+    const name = document.getElementById("username").value;
+    const country = document.getElementById("country").value;
+    const state = document.getElementById("state").value;
+    const district = document.getElementById("district").value;
+    const city = document.getElementById("city").value;
+    const address = document.getElementById("streetAddress").value;
+
+    // Check if any field is only whitespace
+    if (isWhitespace(name) || isWhitespace(country) || isWhitespace(state) || isWhitespace(district) || isWhitespace(city) || isWhitespace(address)) {
+      document.getElementById("error-message").innerHTML = "Name, Country, State, District, City, and Address should contain characters only.";
+      return false;
+    }
+
+    // Validate characters using regex
+    const charRegex = /^[A-Za-z]+(?:\s[A-Za-z]+)*$/;
+    if (!charRegex.test(name) || !charRegex.test(country) || !charRegex.test(state) || !charRegex.test(district) || !charRegex.test(city) || !charRegex.test(address)) {
+      document.getElementById("error-message").innerHTML = "Name, Country, State, District, City, and Address should contain characters only.";      return false;
+      return false;
+    }
+
+    return true;
+  }
+</script>
 </body>
 
 </html>

@@ -168,8 +168,8 @@
     const confirmPassword = document.getElementById("confirmPassword").value;
 
     // Check if new password meets the criteria
-    if (newPassword.length < 8 || !/[0-9]/.test(newPassword) || !/[!@#$%^&*]/.test(newPassword)) {
-      showValidationMessage("New password must be at least 8 characters long and contain at least one number and one symbol.");
+    if (newPassword.length < 8 || !/[0-9]/.test(newPassword) || !/[!@#$%^&*]/.test(newPassword) || /\s/.test(newPassword)) {
+      showValidationMessage("New password must be at least 8 characters long and contain at least one number, one symbol, and no white spaces.");
       return false;
     }
 
