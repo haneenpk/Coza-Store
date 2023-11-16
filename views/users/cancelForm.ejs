@@ -65,7 +65,6 @@
               </div>
             </div>
             <div class="col-md-6 address border p-3 mb-3">
-              <input type="hidden" name="address" value="<%= currentAddress._id %>">
               <div class="d-flex justify-content-between">
                 <h3>Address</h3>
                 <% if (currentAddress) { %>
@@ -84,6 +83,7 @@
                 <%= currentAddress.state %>,
                 <%= currentAddress.country %>
               </p>
+              <input type="hidden" name="address" value="<%= currentAddress._id %>">
               <% } else { %>
               <p>No address found.</p>
               <% } %>

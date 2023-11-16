@@ -32,8 +32,6 @@ usersRoute.get("/about", mainController.loadAbout)
 
 usersRoute.get("/contact", mainController.loadContact)
 
-usersRoute.get("/logout", auth.isLogin, loginSignupController.userLogout)
-
 // signup , otp , login
 
 usersRoute.get("/signup", auth.isLogout, loginSignupController.loadSignup)
@@ -79,6 +77,12 @@ usersRoute.get("/profile/deletePhoto", auth.isLogin, profileController.deletePro
 usersRoute.get("/edit-profile", auth.isLogin, profileController.loadEditProfile)
 
 usersRoute.post("/edit-profile", auth.isLogin, profileController.EditProfile)
+
+usersRoute.get("/verifyChangeMail", auth.isLogin, profileController.loadOTPChangeMail)
+
+usersRoute.post("/verifyChangeMail", auth.isLogin, profileController.verifyOTPChangeMail)
+
+usersRoute.get("/logout", auth.isLogin, loginSignupController.userLogout)
 
 // change password
 

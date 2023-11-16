@@ -243,7 +243,7 @@ const loadOTPForgetPass = async (req, res) => {
                     userId: userData._id,
                     otp: hashedOTP,
                     createdAt: Date.now(),
-                    expiresAt: Date.now() + 3600000,
+                    expiresAt: Date.now() + 60000,
                 })
 
                 // save otp record
@@ -390,7 +390,7 @@ const loadOTPVerifyAc = async (req, res) => {
                     userId: userData._id,
                     otp: hashedOTP,
                     createdAt: Date.now(),
-                    expiresAt: Date.now() + 3600000,
+                    expiresAt: Date.now() + 60000,
                 })
 
                 // save otp record
