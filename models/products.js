@@ -13,7 +13,6 @@ const products = mongoose.Schema({
         type:String,
         require:true
     },
-    sizes:[String],
     stock:{
         type:Number,
         require:true

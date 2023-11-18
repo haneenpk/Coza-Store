@@ -21,7 +21,6 @@ const insertUsers = async (req, res) => {
 
     try {
 
-        console.log(req.body);
         const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
         if (!req.body.username) return res.render("users/signup", { error: "username should be filled" })
@@ -149,8 +148,8 @@ const verifyOTPSignup = async (req, res) => {
                 res.render("users/signup-otp", { message: "Account record doesn't exist or has been verified already. Please sign up or log in.", userId })
             } else {
                 //user otp records exists
-                const { expiresAt } = UserOTPVerificationRecords[0]
-                const hashedOTP = UserOTPVerificationRecords[0].otp
+                const { expiresAt } = UserOTPVerificationRecords[UserOTPVerificationRecords.length-1]
+                const hashedOTP = UserOTPVerificationRecords[UserOTPVerificationRecords.length-1].otp
 
                 if (expiresAt < Date.now()) {
                     //user otp records has expires
@@ -194,6 +193,26 @@ const loadLogin = async (req, res) => {
 
         res.set('Cache-Control', 'no-store')
         res.render("users/login")
+
+    } catch (error) {
+        res.render("error/internalError", { error })
+    }
+
+}
+
+const resendOTPSignup = async (req, res) => {
+
+    try {
+
+        if (req.query.userId){
+            const result = await User.findById(req.query.userId);
+
+            sendOTPVerificationEmail(result, res)
+    
+            res.redirect(`/verifyOTP?userId=${result._id}`)
+        } else {
+            res.redirect("/login")
+        }
 
     } catch (error) {
         res.render("error/internalError", { error })
@@ -456,7 +475,7 @@ const verifyOTPVerifyAcPage = async (req, res) => {
                     } else {
                         //success
                         await UserOTPVerification.deleteMany({ userId })
-                        await User.updateOne({ _id:userId },{ $set: { verified: true } })
+                        await User.updateOne({ _id: userId }, { $set: { verified: true } })
                         res.render("users/login", { success: "Verified your Account successfully" })
                     }
                 }
@@ -525,6 +544,7 @@ module.exports = {
     loadSignup,
     loadOTPpage,
     verifyOTPSignup,
+    resendOTPSignup,
     loadLogin,
     loadForgetPass,
     loadOTPForgetPass,

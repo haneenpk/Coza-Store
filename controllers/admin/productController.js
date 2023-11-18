@@ -103,7 +103,6 @@ const AddProduct = async (req, res) => {
             name: req.body.name,
             price: req.body.price,
             description: req.body.description,
-            sizes: req.body.sizes.split(',').map(size => size.trim()),
             stock: req.body.stock,
             brand: req.body.brand,
             category: req.body.category, // Category ID from the form
@@ -196,8 +195,7 @@ const EditProduct = async (req, res) => {
 
     try {
 
-        const size = req.body.sizes.split(',').map(size => size.trim())
-        await Product.updateOne({ _id: req.body.id }, { $set: { name: req.body.name, price: req.body.price, description: req.body.description, sizes: size, brand: req.body.brand, stock: req.body.stock, category: req.body.category } })
+        await Product.updateOne({ _id: req.body.id }, { $set: { name: req.body.name, price: req.body.price, description: req.body.description, brand: req.body.brand, stock: req.body.stock, category: req.body.category } })
         res.redirect("/admin/product")
 
     } catch (error) {

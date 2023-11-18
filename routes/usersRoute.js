@@ -36,15 +36,17 @@ usersRoute.get("/contact", mainController.loadContact)
 
 usersRoute.get("/signup", auth.isLogout, loginSignupController.loadSignup)
 
-usersRoute.post("/signup", loginSignupController.insertUsers)
+usersRoute.post("/signup", auth.isLogout, loginSignupController.insertUsers)
 
-usersRoute.post("/verifyOTP", loginSignupController.verifyOTPSignup)
+usersRoute.post("/verifyOTP", auth.isLogout, loginSignupController.verifyOTPSignup)
 
-usersRoute.get("/verifyOTP", loginSignupController.loadOTPpage)
+usersRoute.get("/verifyOTP", auth.isLogout, loginSignupController.loadOTPpage)
+
+usersRoute.get("/resendOTPSignup",auth.isLogout, loginSignupController.resendOTPSignup)
 
 usersRoute.get("/login", auth.isLogout, loginSignupController.loadLogin)
 
-usersRoute.post("/login", loginSignupController.verifyLogin)
+usersRoute.post("/login", auth.isLogout, loginSignupController.verifyLogin)
 
 usersRoute.get("/forgot-password", auth.isLogout, loginSignupController.loadForgetPass)
 
