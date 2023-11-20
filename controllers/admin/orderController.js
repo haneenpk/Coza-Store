@@ -50,7 +50,7 @@ const updateActionOrder = async (req, res) => {
 
     try {
 
-        if(req.query.action === "Delivered"){
+        if (req.query.action === "Delivered") {
             // coupons
             const foundCoupon = await Coupon.findOne({
                 isActive: true, minimumPurchaseAmount: { $lte: order.totalAmount }
@@ -139,14 +139,14 @@ const returnRequestAction = async (req, res) => {
         } else {
 
             const currentUser = await User.findById(foundOrders.user)
-            
+
             const EditProduct = await Product.findOne({ _id: req.body.product });
-    
+
             const currentStock = EditProduct.stock;
             EditProduct.stock = currentStock + foundRequet.quantity;
-    
+
             await EditProduct.save();
-            
+
             const refundAmount = currentProduct.total;
             currentUser.wallet.balance += refundAmount;
 
@@ -205,65 +205,60 @@ const returnCancelAction = async (req, res) => {
         const foundCancel = await Cancel.findById(req.body.request).populate('user');
         const foundOrders = await Order.findById(req.body.order).populate('products.product');
         const currentProduct = foundOrders.products.find((product) => product.product._id.toString() === req.body.product.toString())
-        if (req.body.action === "approve") {
-            foundCancel.status = 'Approved';
-            currentProduct.cancelRequested = 'Approved';
-        } else {
 
-            if (foundOrders.paymentMethod !== 'Cash on delivery') {
-                const currentUser = await User.findById(foundCancel.user._id);
-                console.log(currentUser);
-    
-                if (currentUser) { // Check if currentUser is defined
-                    const refundAmount = currentProduct.total;
-                    currentUser.wallet.balance += refundAmount;
-    
-                    const transactionData = {
-                        amount: refundAmount,
-                        description: 'Order cancelled.',
-                        type: 'Credit',
-                    };
-                    currentUser.wallet.transactions.push(transactionData);
-    
-                    // Save changes to the user's wallet, canceled product, and order
-                    await currentUser.save();
-    
-                } else {
-                    res.render("error/internalError", { error:"user not found" })
-                }
-            }
-            foundCancel.status = 'Completed';
-            currentProduct.isCancelled = true;
-            currentProduct.cancelRequested = 'Completed'
-    
-            const EditProduct = await Product.findOne({ _id: currentProduct.product._id });
-    
-            const currentStock = EditProduct.stock;
-            EditProduct.stock = currentStock + currentProduct.quantity;
+        if (foundOrders.paymentMethod !== 'Cash on delivery') {
+            const currentUser = await User.findById(foundCancel.user._id);
+            console.log(currentUser);
 
-            foundOrders.totalAmount -= currentProduct.total
-    
-            await EditProduct.save();
-    
-            // Function to check if all products in the order are cancelled
-            function areAllProductsCancelled(order) {
-                for (const product of order.products) {
-                    if (!product.isCancelled) {
-                        return false; // If any product is not cancelled, return false
-                    }
-                }
-                return true; // All products are cancelled
+            if (currentUser) { // Check if currentUser is defined
+                const refundAmount = currentProduct.total;
+                currentUser.wallet.balance += refundAmount;
+
+                const transactionData = {
+                    amount: refundAmount,
+                    description: 'Order cancelled.',
+                    type: 'Credit',
+                };
+                currentUser.wallet.transactions.push(transactionData);
+
+                // Save changes to the user's wallet, canceled product, and order
+                await currentUser.save();
+
+            } else {
+                res.render("error/internalError", { error: "user not found" })
             }
-    
-            // Check if all products in the order are cancelled
-            if (areAllProductsCancelled(foundOrders)) {
-                // Update the order status to "Cancelled"
-    
-                foundOrders.totalAmount -= 0
-                foundOrders.status = "Cancelled";
-            }
-    
         }
+        foundCancel.status = 'Completed';
+        currentProduct.isCancelled = true;
+        currentProduct.cancelRequested = 'Completed'
+
+        const EditProduct = await Product.findOne({ _id: currentProduct.product._id });
+
+        const currentStock = EditProduct.stock;
+        EditProduct.stock = currentStock + currentProduct.quantity;
+
+        foundOrders.totalAmount -= currentProduct.total
+
+        await EditProduct.save();
+
+        // Function to check if all products in the order are cancelled
+        function areAllProductsCancelled(order) {
+            for (const product of order.products) {
+                if (!product.isCancelled) {
+                    return false; // If any product is not cancelled, return false
+                }
+            }
+            return true; // All products are cancelled
+        }
+
+        // Check if all products in the order are cancelled
+        if (areAllProductsCancelled(foundOrders)) {
+            // Update the order status to "Cancelled"
+
+            foundOrders.totalAmount -= 0
+            foundOrders.status = "Cancelled";
+        }
+
         await foundCancel.save();
         await foundOrders.save();
         res.redirect('/admin/cancel-requests');

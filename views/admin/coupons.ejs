@@ -1,246 +1,187 @@
 <%- include('../partials/adminHeader') %>
 
-            <div class="container-xxl flex-grow-1 container-p-y">
-              
-                <div class="col-lg-12 grid-margin stretch-card">
-                    <div class="card">
-                      <div class="card-body">
-                        <div class="d-flex justify-content-between flex-wrap">
-                          <h4 class="card-title">Coupons</h4>
-                          <div class="d-flex justify-content-between">
-                            <% if (foundCoupons.length > 0) { %>
-                                <select name="status" class="mr-3" id="search-input">
-                                    <option>Select Status</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Deactivate</option>
-                                </select>
-                            <% } %>
-                            <a href="/admin/new-coupon" class="btn btn-primary">New Coupon</a>
-                          </div>
-                        </div>
-                        <div class="table-responsive">
-                          <table class="table table-striped">
-                            <thead>
-                              <tr>
-                                <th>
-                                  Code
-                                </th>
-                                <th>
-                                  Discount Type
-                                </th>
-                                <th>
-                                  Expiration Date
-                                </th>
-                                <th>
-                                  Min. Purhcase Amount
-                                </th>
-                                <th>
-                                  Usage Limit/<br>
-                                  Used Count
-                                </th>
-                                <th>
-                                  Action
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody id="search-results">
-                              <% if (!foundCoupons.length) { %>
-                              <tr>
-                                <td colspan="7">
-                                  No coupons found.
-                                </td>
-                              </tr>
-                              <% } else { %>
-                              <% foundCoupons.forEach((coupon) => { %>
-                              <tr>
-                                <td class="py-1">
-                                  <%= coupon.code %><br>
-                                </td>
-                                <td>
-                                  <% if (coupon.discountType === 'percentage') { %>
-                                  Percentage (<%= coupon.discountAmount %>%)
-                                  <% } else { %>
-                                  Fixed Amount (<%= coupon.discountAmount %>/-)
-                                  <% } %>
-                                </td>
-                                <td>
-                                  <%= coupon.expirationDate.toLocaleDateString() %>
-                                </td>
-                                <td>
-                                  <%= coupon.minimumPurchaseAmount %>
-                                </td>
-                                <td>
-                                  <%= coupon.usageLimit %> /
-                                  <%= coupon.usedCount %>
-                                </td>
-                                <td>
-                                  <form action="/admin/coupons/action/<%= coupon._id %>?_method=PATCH" method="post">
-                                    <input type="hidden" name="coupon" value="<%= coupon._id %>">
-                                    <% if (coupon.isActive) { %>
-                                    <input type="hidden" name="state" value="1">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                      Deactivate
-                                    </button>
-                                    <% } else { %>
-                                    <input type="hidden" name="state" value="">
-                                    <button type="submit" class="btn btn-warning btn-sm">
-                                      Activate
-                                    </button>
-                                    <% } %>
-                                  </form>
-                                </td>
-                              </tr>
-                              <% }) %>
-                              <% } %>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+<div class="container-xxl flex-grow-1 container-p-y">
 
-                  <!-- Pagination controls -->
-                  <div class="pagination" style="margin-top: 15px;">
-
-                      <% for (let i = 1; i <= totalPages; i++) { %>
-                        <a href="?page=<%= i %>" class="page-link"><%= i %></a>
-                      <% } %>
-
-                  </div>
-          
-                </div>
-
-            </div>
-            <!-- / Content -->
-   
+  <div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between flex-wrap">
+          <h4 class="card-title">Coupons</h4>
+          <div class="d-flex justify-content-between">
+            <% if (foundCoupons.length > 0) { %>
+            <select name="status" class="mr-3" id="statusFilter" onchange="filterCoupons()">
+              <option value="all">All</option>
+              <option value="1">Active</option>
+              <option value="0">Deactivate</option>
+            </select>
+            <% } %>
+            <a href="/admin/new-coupon" class="btn btn-primary">New Coupon</a>
           </div>
-          <!-- Content wrapper -->
         </div>
-        <!-- / Layout page -->
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>
+                  Code
+                </th>
+                <th>
+                  Discount Type
+                </th>
+                <th>
+                  Expiration Date
+                </th>
+                <th>
+                  Min. Purhcase Amount
+                </th>
+                <th>
+                  Usage Limit/<br>
+                  Used Count
+                </th>
+                <th>
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody id="search-results">
+              <% if (!foundCoupons.length) { %>
+              <tr>
+                <td colspan="7">
+                  No coupons found.
+                </td>
+              </tr>
+              <% } else { %>
+              <% foundCoupons.forEach((coupon) => { %>
+              <tr class="<%= coupon.isActive ? 'active' : 'deactivate' %>">
+                <td class="py-1">
+                  <%= coupon.code %><br>
+                </td>
+                <td>
+                  <% if (coupon.discountType === 'percentage') { %>
+                  Percentage (<%= coupon.discountAmount %>%)
+                  <% } else { %>
+                  Fixed Amount (<%= coupon.discountAmount %>/-)
+                  <% } %>
+                </td>
+                <td>
+                  <%= coupon.expirationDate.toLocaleDateString() %>
+                </td>
+                <td>
+                  <%= coupon.minimumPurchaseAmount %>
+                </td>
+                <td>
+                  <%= coupon.usageLimit %> /
+                  <%= coupon.usedCount %>
+                </td>
+                <td>
+                  <form action="/admin/coupons/action/<%= coupon._id %>?_method=PATCH" method="post">
+                    <input type="hidden" name="coupon" value="<%= coupon._id %>">
+                    <% if (coupon.isActive) { %>
+                    <input type="hidden" name="state" value="1">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                      Deactivate
+                    </button>
+                    <% } else { %>
+                    <input type="hidden" name="state" value="">
+                    <button type="submit" class="btn btn-warning btn-sm">
+                      Activate
+                    </button>
+                    <% } %>
+                  </form>
+                </td>
+              </tr>
+              <% }) %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
       </div>
-
-      <!-- Overlay -->
-      <div class="layout-overlay layout-menu-toggle"></div>
     </div>
-    <!-- / Layout wrapper -->
+  </div>
 
-    <!-- Core JS -->
-    <!-- build:js assets/vendor/js/core.js -->
-    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="../assets/vendor/libs/popper/popper.js"></script>
-    <script src="../assets/vendor/js/bootstrap.js"></script>
-    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+  <!-- Pagination controls -->
+  <div class="pagination" style="margin-top: 15px;">
 
-    <script src="../assets/vendor/js/menu.js"></script>
-    <!-- endbuild -->
+    <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="?page=<%= i %>" class="page-link"><%= i %></a>
+    <% } %>
 
-    <!-- Vendors JS -->
-    <script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
+  </div>
 
-    <!-- Main JS -->
-    <script src="../assets/js/main.js"></script>
+</div>
 
-    <!-- Page JS -->
-    <script src="../assets/js/dashboards-analytics.js"></script>
+</div>
+<!-- / Content -->
 
-    <!-- Place this tag in your head or just before your close body tag. -->
-    <script async defer src="https://buttons.github.io/buttons.js"></script>
+</div>
+<!-- Content wrapper -->
+</div>
+<!-- / Layout page -->
+</div>
 
-    <script>
-        // JavaScript code for handling the AJAX request when input changes
-        $(document).ready(function() {
-          // Listen for changes in the search input
-          $('#search-input').on('input', function() {
-            // Get the search query from the input field
-            const searchQuery = $(this).val();
+<!-- Overlay -->
+<div class="layout-overlay layout-menu-toggle"></div>
+</div>
+<!-- / Layout wrapper -->
 
-            // Send an AJAX request to your server
-            $.ajax({
-              type: 'POST', // Use GET or POST as needed
-              url: '/admin/coupons?search=true',
-              data: {
-                searchQuery
-              }, // Send the search query to the server
-              success: function(response) {
-                // Handle the response from the server
-                const couponDatas = response.couponDatas; // Assuming this is an array
+<!-- Core JS -->
+<!-- build:js assets/vendor/js/core.js -->
+<script src="../assets/vendor/libs/jquery/jquery.js"></script>
+<script src="../assets/vendor/libs/popper/popper.js"></script>
+<script src="../assets/vendor/js/bootstrap.js"></script>
+<script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
 
-                // Get a reference to the search-results container
-                const searchResultsContainer = $('#search-results');
+<script src="../assets/vendor/js/menu.js"></script>
+<!-- endbuild -->
 
-                // Clear the existing content (if any)
-                searchResultsContainer.empty();
+<!-- Vendors JS -->
+<script src="../assets/vendor/libs/apex-charts/apexcharts.js"></script>
 
-                if (couponDatas.length === 0) {
-                  // If no coupon found, display a message in a single cell of the row
-                  const row = $('<tr>');
-                  const messageCell = $('<td>', {
-                    colspan: 7, // Span across all columns
-                    text: 'No coupons found.'
-                  });
+<!-- Main JS -->
+<script src="../assets/js/main.js"></script>
 
-                  row.append(messageCell);
-                  searchResultsContainer.append(row);
-                } else {
-                  // Loop through the couponDatas array and create rows for each coupon
-                  couponDatas.forEach(coupon => {
-                    const row = $('<tr>');
-                    row.append($('<td>').text(coupon.code));
-                    const symbol = coupon.discountType === 'percentage' ? "%)" : "/-)";
-                    row.append($('<td>').text(coupon.discountType + " (" + coupon.discountAmount + symbol));
-                    // const date = coupon.expirationDate.toLocaleDateString();
-                    row.append($('<td>').text(coupon.expirationDate));
-                    row.append($('<td>').text(coupon.minimumPurchaseAmount));
-                    row.append($('<td>').text(coupon.usageLimit + " / " + coupon.usedCount));
-                    // Create the last <td> with the form
-                    let elementsToAppend = [];
+<!-- Page JS -->
+<script src="../assets/js/dashboards-analytics.js"></script>
 
-                    const actionForm = $('<form>', {
-                      action: `/admin/coupons/action/${coupon._id}?_method=PATCH`,
-                      method: 'post',
-                      id: 'action-form'
-                    });
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
 
-                    if (!coupon.isActive) {
-                      actionForm.append($('<input>', {
-                        type: 'hidden',
-                        name: 'state',
-                        value: ''
-                      }));
-                      actionForm.append($('<button>', {
-                        type: 'submit',
-                        class: 'btn btn-warning btn-sm block-button',
-                        text: 'Activate'
-                      }))
-                    } else {
-                      actionForm.append($('<input>', {
-                        type: 'hidden',
-                        name: 'state',
-                        value: '1'
-                      }));
-                      actionForm.append($('<button>', {
-                        type: 'submit',
-                        class: 'btn btn-danger btn-sm block-button',
-                        text: 'Deactivate'
-                      }));
-                    }
+<script>
+  function filterCoupons() {
+    var statusFilter = document.getElementById('statusFilter').value;
+    var coupons = document.getElementsByClassName('active'); // Assuming class 'active' for active coupons
+    var deactivateCoupons = document.getElementsByClassName('deactivate'); // Assuming class 'deactivate' for deactivated coupons
 
-                    elementsToAppend.push(actionForm);
+    if (statusFilter === '1') {
+      // Show active coupons
+      for (var i = 0; i < coupons.length; i++) {
+        coupons[i].style.display = '';
+      }
+      // Hide deactivated coupons
+      for (var i = 0; i < deactivateCoupons.length; i++) {
+        deactivateCoupons[i].style.display = 'none';
+      }
+    } else if (statusFilter === '0') {
+      // Show deactivated coupons
+      for (var i = 0; i < deactivateCoupons.length; i++) {
+        deactivateCoupons[i].style.display = '';
+      }
+      // Hide active coupons
+      for (var i = 0; i < coupons.length; i++) {
+        coupons[i].style.display = 'none';
+      }
+    } else {
+      // Show all coupons
+      for (var i = 0; i < coupons.length; i++) {
+        coupons[i].style.display = '';
+      }
+      for (var i = 0; i < deactivateCoupons.length; i++) {
+        deactivateCoupons[i].style.display = '';
+      }
+    }
+  }
+</script>
 
-                    row.append($('<td>').html(elementsToAppend));
-                    // Append the row to the table
-                    searchResultsContainer.append(row);
-                  });
-                }
-              },
-              error: function(error) {
-                console.error('Error:', error);
-              }
-            });
-          });
-        });
-    </script>
+</body>
 
-    
-  </body>
 </html>

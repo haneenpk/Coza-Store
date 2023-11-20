@@ -24,7 +24,7 @@
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label" for="basic-default-name">Product name</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="productName" placeholder="Product name" name="name" required />
+                <input type="text" class="form-control" id="productName" placeholder="Product name" name="name" oninput="validateLetterField(this)" required />
               </div>
             </div>
 
@@ -38,14 +38,14 @@
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label" for="basic-default-name">Description</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="productDescription" placeholder="Description of the product" name="description" required />
+                <input type="text" class="form-control" id="productDescription" placeholder="Description of the product" name="description" oninput="validateDescription(this)" required />
               </div>
             </div>
 
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label" for="basic-default-name">Brand</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="productBrand" placeholder="Brand name of the product" name="brand" required />
+                <input type="text" class="form-control" id="productBrand" placeholder="Brand name of the product" name="brand" oninput="validateLetterField(this)" required />
               </div>
             </div>
 
@@ -128,6 +128,22 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 
 <script>
+    function validateLetterField(input) {
+    // Remove spaces at the beginning
+    input.value = input.value.replace(/^\s+/g, '');
+
+    // Allow only letters and spaces
+    input.value = input.value.replace(/[^A-Za-z\s]/g, '');
+  }
+
+  function validateDescription(input) {
+    // Remove spaces at the beginning
+    input.value = input.value.replace(/^\s+/g, '');
+
+    // Allow only letters, commas, and full stops
+    input.value = input.value.replace(/[^A-Za-z,.\s]/g, '');
+  }
+
   function validateNumberInput(input) {
     input.value = input.value.replace(/\D/g, ''); // Allow only digits (0-9)
 
@@ -139,36 +155,35 @@
     const productName = document.getElementById("productName").value;
     const productBrand = document.getElementById("productBrand").value;
     const productDescription = document.getElementById("productDescription").value;
-    const productSizes = document.getElementById("productSizes").value;
 
     // Reset the error message
     displayError("", "error-message");
 
-    // Check if any field is only whitespace
-    if (isWhitespace(productName) || isWhitespace(productBrand) || isWhitespace(productDescription) || isWhitespace(productSizes)) {
-      displayError("Product Name, Brand, Description, and Sizes should contain characters only.");
+    // Check if any field is only whitespace or starts with a space
+    if (isWhitespaceOrStartsWithSpace(productName) || isWhitespaceOrStartsWithSpace(productBrand) || isWhitespaceOrStartsWithSpace(productDescription)) {
+      displayError("Product Name, Brand, and Description should contain characters only");
       return false;
     }
 
-    // Validate characters using regex
-    const charRegex = /^[A-Za-z\s]+$/; // Allow letters and spaces
+    // Validate characters using regex (allow only letters and spaces)
+    const charRegex = /^[A-Za-z\s]+$/;
     if (!charRegex.test(productName) || !charRegex.test(productBrand)) {
-      displayError("Product Name and Brand should contain characters only.");
+      displayError("Product Name and Brand should contain letters only.");
       return false;
     }
 
-    // Validate description and size fields allowing commas, full stops, and spaces
+    // Validate description field allowing letters, numbers, commas, full stops, and spaces
     const descSizeRegex = /^[A-Za-z0-9,.\s]+$/;
-    if (!descSizeRegex.test(productDescription) || !descSizeRegex.test(productSizes)) {
-      displayError("Description and Sizes should contain letters, numbers, commas, full stops, and spaces only.");
+    if (!descSizeRegex.test(productDescription)) {
+      displayError("Description should contain letters, numbers, commas, full stops, and spaces only.");
       return false;
     }
 
     return true;
   }
 
-  function isWhitespace(str) {
-    return /^\s*$/.test(str);
+  function isWhitespaceOrStartsWithSpace(str) {
+    return /^\s|\s$/.test(str);
   }
 
   function displayError(message, elementId = "error-message") {

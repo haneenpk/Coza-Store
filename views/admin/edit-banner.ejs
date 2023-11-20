@@ -35,14 +35,14 @@
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label" for="basic-default-name">Small title</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="basic-default-name" placeholder="Name" name="name" value="<%= banners.name %>" />
+                <input type="text" class="form-control" id="basic-default-name" placeholder="Name" name="name" value="<%= banners.name %>" oninput="validateFeild(this)" required/>
               </div>
             </div>
 
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label" for="basic-default-name">Title</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="basic-default-name" placeholder="Title of banner" name="title" value="<%= banners.title %>" />
+                <input type="text" class="form-control" id="basic-default-name" placeholder="Title of banner" name="title" value="<%= banners.title %>" oninput="validateFeild(this)" required/>
               </div>
             </div>
 
@@ -99,7 +99,7 @@
             <div class="card-body">
               <form action="/admin/uploadPhoto-banner?_method=PATCH&id=<%= banners._id %>" method="post" enctype="multipart/form-data">
                 <div class="mb-3" id="appendError">
-                  <input type="file" accept="image/*" name="image" class="form-control file-upload-info" placeholder="Upload Image" id="preview-input" />
+                  <input type="file" accept="image/*" name="image" class="form-control file-upload-info" placeholder="Upload Image" id="preview-input" required/>
                 </div>
                 <div class="d-grid">
                   <button type="submit" class="btn btn-primary">Upload</button>
@@ -149,6 +149,17 @@
 
 <!-- Place this tag in your head or just before your close body tag. -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<script>
+  function validateFeild(input) {
+    // Remove spaces at the beginning
+    input.value = input.value.replace(/^\s+/g, '');
+
+    // Allow only letters, commas, and full stops
+    input.value = input.value.replace(/[^A-Za-z0-9,.\s]/g, '');
+  }
+</script>
+
 </body>
 
 </html>

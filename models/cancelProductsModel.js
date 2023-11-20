@@ -35,7 +35,7 @@ const cancelSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'Approved', 'Completed'],
+        enum: ['Pending', 'Completed'],
         default: 'Pending',
     },
     createdAt: {
