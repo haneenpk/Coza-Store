@@ -286,64 +286,6 @@ const requestReturnProduct = async (req, res) => {
     }
 };
 
-const cancelOrder = async (req, res) => {
-    try {
-        const foundOrder = await Order.findById(req.body.orderId).populate('products.product');
-        const foundProduct = foundOrder.products.find((product) => product.product._id.toString() === req.body.productId);
-        if (foundOrder.paymentMethod !== 'Cash on delivery') {
-            const currentUser = await User.findById(req.session.user_id);
-
-            if (currentUser) { // Check if currentUser is defined
-                const refundAmount = foundProduct.total;
-                currentUser.wallet.balance += refundAmount;
-
-                const transactionData = {
-                    amount: refundAmount,
-                    description: 'Order cancelled.',
-                    type: 'Credit',
-                };
-                currentUser.wallet.transactions.push(transactionData);
-
-                // Save changes to the user's wallet, canceled product, and order
-                await currentUser.save();
-            } else {
-                console.log("User not found");
-            }
-        }
-        foundProduct.isCancelled = true;
-
-        const EditProduct = await Product.findOne({ _id: foundProduct.product._id });
-
-        const currentStock = EditProduct.stock;
-        EditProduct.stock = currentStock + foundProduct.quantity;
-
-        await EditProduct.save();
-
-        // Function to check if all products in the order are cancelled
-        function areAllProductsCancelled(order) {
-            for (const product of order.products) {
-                if (!product.isCancelled) {
-                    return false; // If any product is not cancelled, return false
-                }
-            }
-            return true; // All products are cancelled
-        }
-
-        // Check if all products in the order are cancelled
-        if (areAllProductsCancelled(foundOrder)) {
-            // Update the order status to "Cancelled"
-
-            foundOrder.totalAmount -= 0
-            foundOrder.status = "Cancelled";
-        }
-
-        await foundOrder.save();
-        res.redirect("/order");
-    } catch (error) {
-        res.render("error/internalError", { error })
-    }
-};
-
 const getCancelProductForm = async (req, res) => {
     try {
         const currentUser = await User.findById(req.session.user_id);
@@ -540,7 +482,6 @@ module.exports = {
     requestReturnProduct,
     getCancelProductForm,
     requestCancelProduct,
-    cancelOrder,
     getWallet,
     getCoupons,
     applyCoupon,

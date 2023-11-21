@@ -1,82 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTP Verification</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Google Fonts - Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Google Fonts - Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+    }
 
-        .box {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            max-width: 400px;
-            margin: 0 auto;
-            margin-top: 50px;
-        }
+    .box {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      max-width: 400px;
+      margin: 0 auto;
+      margin-top: 50px;
+    }
 
-        h3 {
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
+    h3 {
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
 
-        label {
-            font-weight: 500;
-        }
+    label {
+      font-weight: 500;
+    }
 
-        .login-btn {
-            background-color: #007BFF;
-            color: #fff;
-            font-weight: 600;
-            border: none;
-        }
+    .login-btn {
+      background-color: #007BFF;
+      color: #fff;
+      font-weight: 600;
+      border: none;
+    }
 
-        .login-btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    .login-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 box">
-                <form action="/verifyChangeMail" method="post">
-                    <h3 class="text-center">Change Email</h3>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 box">
+        <form action="/verifyChangeMail" method="post">
+          <h3 class="text-center">Change Email</h3>
 
-                    <div class="form-group">
-                        <label for="otp">Enter OTP</label>
-                        <input type="text" class="form-control" placeholder="Enter OTP" id="otp" name="otp">
-                        <input type="hidden" name="userId" value="<%= userId %>">
-                        <input type="hidden" name="changeMail" value="<%= changeMail %>">
-                    </div>
+          <div class="form-group">
+            <label for="otp">Enter OTP</label>
+            <input type="text" class="form-control" placeholder="Enter OTP" id="otp" name="otp">
+            <input type="hidden" name="userId" value="<%= userId %>">
+            <input type="hidden" name="changeMail" value="<%= changeMail %>">
+          </div>
 
-                    <button class="btn btn-primary btn-block login-btn" type="submit">Verify</button>
-                </form>
+          <button class="btn btn-primary btn-block login-btn" type="submit">Verify</button>
+        </form>
 
-                <div style="margin-top: 10px; text-align: center;">
-                    <% if(typeof message !== "undefined") { %>
-                        <span style="color:#f00; font-weight: bold;"><%= message %></span>
-                    <% } %>
-                </div>
-            </div>
+        <div style="margin-top: 10px; text-align: center;">
+          <% if(typeof message !== "undefined") { %>
+          <span style="color:#f00; font-weight: bold;"><%= message %></span>
+          <% } %>
         </div>
-    </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <div style="text-align: center;">
+          <span id="countdown" style="display: block; font-weight: bold;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    function startCountdown() {
+      const timeoutInSeconds = 60;
+      const countdownElement = document.getElementById('countdown');
+
+      let timeLeft;
+      const startTime = sessionStorage.getItem('otpTimestamp');
+
+      if (startTime) {
+        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+        timeLeft = Math.max(timeoutInSeconds - elapsedTime, 0);
+      } else {
+        timeLeft = timeoutInSeconds;
+        sessionStorage.setItem('otpTimestamp', Date.now());
+      }
+
+      const countdownInterval = setInterval(function() {
+        timeLeft--;
+
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          countdownElement.textContent = 'Timeout!';
+          countdownElement.style.color = '#f00'; // Set text color to red
+          sessionStorage.removeItem('otpTimestamp');
+        } else {
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          countdownElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+      }, 1000);
+    }
+
+    window.onload = startCountdown;
+
+    function resendOTP() {
+      // Implement the logic for resending OTP here
+      // For example, make an AJAX request to the server to resend the OTP
+
+      // Reset the stored timestamp in sessionStorage when resending
+      sessionStorage.setItem('otpTimestamp', Date.now());
+      startCountdown(); // Restart the countdown after resending
+    }
+  </script>
 </body>
+
 </html>

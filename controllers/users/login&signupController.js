@@ -165,7 +165,7 @@ const verifyOTPSignup = async (req, res) => {
                         //success
                         await User.updateOne({ _id: userId }, { $set: { verified: true } })
                         await UserOTPVerification.deleteMany({ userId })
-                        res.render("users/login")
+                        res.render("users/login",{ success:"Account is added login please." })
                     }
                 }
             }

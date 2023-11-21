@@ -149,8 +149,6 @@ usersRoute.get("/return-product", auth.isLogin, orderController.getReturnProduct
 
 usersRoute.post("/return-product", auth.isLogin, orderController.requestReturnProduct)
 
-// usersRoute.post("/cancel-order", auth.isLogin, orderController.cancelOrder)
-
 // Wallet
 
 usersRoute.get("/wallet", auth.isLogin, orderController.getWallet)

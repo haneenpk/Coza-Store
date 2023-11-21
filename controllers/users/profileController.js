@@ -62,7 +62,6 @@ const deleteProfilePhoto = async (req, res) => {
 const EditProfile = async (req, res) => {
 
     try {
-
         const { id, username, email, mobile } = req.body;
         const userData = await User.findById(id)
 
@@ -93,6 +92,17 @@ const EditProfile = async (req, res) => {
             if (/^\S*$/.test(username) && /^[a-zA-Z]+$/.test(username)) {
                 if (userData.username !== username || userData.email !== email || userData.mobile !== parseInt(mobile)) {
                     if (userData.username !== username) {
+                        const existingUser = await User.findOne({ username: username })
+
+                        if (existingUser) {
+                            return res.render("users/edit-profile", {
+                                activePage: "profile",
+                                user: req.session.user_id,
+                                userProfile: userData,
+                                error: "User name already exists",
+                            });
+                        }
+
                         await User.updateOne({ _id: id }, { $set: { username } })
                     }
 
@@ -101,6 +111,17 @@ const EditProfile = async (req, res) => {
                     }
 
                     if (userData.email !== email) {
+
+                        const existingEmail = await User.findOne({ email: email })
+
+                        if (existingEmail) {
+                            return res.render("users/edit-profile", {
+                                activePage: "profile",
+                                user: req.session.user_id,
+                                userProfile: userData,
+                                error: "Email already exists",
+                            });
+                        }
 
                         const otp = `${Math.floor(1000 + Math.random() * 9000)}`
 
@@ -112,10 +133,10 @@ const EditProfile = async (req, res) => {
                             html: `<p>Enter <b>${otp}</b> in the website changing for email verifying process</p>
                             <p>This code <b>expire in 1 minutes</b>.</p>`,
                         }
-        
+
                         // hash the otp
                         const saltRounds = 10
-        
+
                         const hashedOTP = await bcrypt.hash(otp, saltRounds)
                         const newOTPVerification = await new UserOTPVerification({
                             userId: userData._id,
@@ -123,11 +144,11 @@ const EditProfile = async (req, res) => {
                             createdAt: Date.now(),
                             expiresAt: Date.now() + 60000,
                         })
-        
+
                         // save otp record
                         await newOTPVerification.save()
                         await transporter.sendMail(mailOptions)
-        
+
                         res.redirect(`/verifyChangeMail?userId=${userData._id}&changeMail=${email}`)
 
                     }
@@ -159,7 +180,7 @@ const loadOTPChangeMail = async (req, res) => {
 
     try {
 
-        if (req.query.userId && req.query.changeMail){
+        if (req.query.userId && req.query.changeMail) {
             res.render("users/changeMail-otp", { userId: req.query.userId, changeMail: req.query.changeMail })
         } else {
             return res.redirect("/profile")
@@ -169,7 +190,7 @@ const loadOTPChangeMail = async (req, res) => {
         res.render("error/internalError", { error })
     }
 
-} 
+}
 
 const verifyOTPChangeMail = async (req, res) => {
     try {
@@ -186,8 +207,8 @@ const verifyOTPChangeMail = async (req, res) => {
                 res.render("users/changeMail-otp", { message: "Account record doesn't exist . Please sign up", userId, changeMail })
             } else {
                 //user otp records exists
-                const { expiresAt } = UserOTPVerificationRecords[UserOTPVerificationRecords.length-1]
-                const hashedOTP = UserOTPVerificationRecords[UserOTPVerificationRecords.length-1].otp
+                const { expiresAt } = UserOTPVerificationRecords[UserOTPVerificationRecords.length - 1]
+                const hashedOTP = UserOTPVerificationRecords[UserOTPVerificationRecords.length - 1].otp
 
                 if (expiresAt < Date.now()) {
                     //user otp records has expires
@@ -271,7 +292,7 @@ const loadAddAddress = async (req, res) => {
 
         const userAddress = await Address.find({ userId: req.session.user_id })
 
-        if (userAddress.length < 4) { 
+        if (userAddress.length < 4) {
             res.render("users/addAdress", { activePage: "profile", user: req.session.user_id })
         } else {
             res.redirect("/profile")

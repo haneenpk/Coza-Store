@@ -55,19 +55,66 @@ const loadDashboard = async (req, res) => {
             },
         ];
 
+        const pipelineDelivered = [
+            {
+                $match: {
+                    status:{
+                        $in:["Delivered"]
+                    },
+                    orderDate: {
+                        $gte: thisMonthStart,
+                        $lte: thisMonthEnd,
+                    },
+                },
+            },
+            {
+                $facet: {
+                    todaysOrders: [
+                        {
+                            $match: {
+                                orderDate: {
+                                    $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+                                    $lt: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
+                                },
+                            },
+                        },
+                        { $count: 'count' },
+                    ],
+                    thisMonthsOrders: [
+                        { $count: 'count' },
+                    ],
+                    thisMonthsTotalRevenue: [
+                        { $group: { _id: null, total: { $sum: '$totalAmount' } } },
+                    ],
+                    totalCustomersThisMonth: [
+                        {
+                            $group: {
+                                _id: '$user',
+                            },
+                        },
+                        { $count: 'count' },
+                    ],
+                },
+            },
+        ];
+
         const order = await Order.aggregate(pipeline);
+        const orderDelivered = await Order.aggregate(pipelineDelivered);
 
         let todaysOrders;
-        let thisMonthsOrders;
+        let thisMonthsDeliveredOrders;
         let thisMonthsTotalRevenue;
         let totalCustomersThisMonth;
 
         order.forEach((ord) => {
             todaysOrders = ord.todaysOrders[0] ? ord.todaysOrders[0].count : 0;
-            thisMonthsOrders = ord.thisMonthsOrders[0] ? ord.thisMonthsOrders[0].count : 0;
-            thisMonthsTotalRevenue = ord.thisMonthsTotalRevenue[0] ? ord.thisMonthsTotalRevenue[0].total : 0;
             totalCustomersThisMonth = ord.totalCustomersThisMonth[0] ? ord.totalCustomersThisMonth[0].count : 0;
         });
+
+        orderDelivered.forEach((ord) => {
+            thisMonthsDeliveredOrders = ord.thisMonthsOrders[0] ? ord.thisMonthsOrders[0].count : 0;
+            thisMonthsTotalRevenue = ord.thisMonthsTotalRevenue[0] ? ord.thisMonthsTotalRevenue[0].total : 0;
+        })
 
         // for charts
         const orderChartData = await Order.find({ status: 'Delivered' });
@@ -133,7 +180,7 @@ const loadDashboard = async (req, res) => {
         res.render('admin/index', {
             activePage: "dashboard",
             todaysOrders,
-            thisMonthsOrders,
+            thisMonthsDeliveredOrders,
             thisMonthsTotalRevenue,
             totalCustomersThisMonth,
             paymentMethods,

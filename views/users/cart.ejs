@@ -41,10 +41,10 @@
                       <i class="fs-16 zmdi zmdi-minus"></i>
                     </div>
 
-                    <input class="mtext-104 cl3 txt-center num-product" id="quantityElement_<%= userData.cart[i].product._id %>" type="number" name="num-product1" value="<%= userData.cart[i].quantity %>" min="1">
+                    <input disabled class="mtext-104 cl3 txt-center num-product" id="quantityElement_<%= userData.cart[i].product._id %>" type="number" name="num-product1" value="<%= userData.cart[i].quantity %>" min="1">
 
                     <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m" onclick="updateCartItem('<%= userData.cart[i].product._id %>', 'increment')">
-                      <i class="fs-16 zmdi zmdi-plus"></i>
+                      <i class="fs-16 zmdi zmdi-plus"></i> 
                     </div>
 
                   </div>
