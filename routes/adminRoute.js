@@ -39,8 +39,6 @@ adminRoute.get("/sales-report",auth.isLogin,mainController.loadSalesReport)
 
 adminRoute.post("/sales-report",auth.isLogin,mainController.loadSalesReport)
 
-adminRoute.get("/download-report",auth.isLogin,mainController.downloadSalesReport);
-
 // Category
 
 adminRoute.get("/category",auth.isLogin,categoryController.loadCategory)

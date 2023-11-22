@@ -1,4 +1,3 @@
-const PDFDocument = require("pdfkit")
 const Admin = require("../../models/adminModel")
 const Order = require("../../models/orderModel")
 
@@ -15,8 +14,8 @@ const loadDashboard = async (req, res) => {
         const pipeline = [
             {
                 $match: {
-                    status:{
-                        $nin:["Cancelled"]
+                    status: {
+                        $nin: ["Cancelled"]
                     },
                     orderDate: {
                         $gte: thisMonthStart,
@@ -58,8 +57,8 @@ const loadDashboard = async (req, res) => {
         const pipelineDelivered = [
             {
                 $match: {
-                    status:{
-                        $in:["Delivered"]
+                    status: {
+                        $in: ["Delivered"]
                     },
                     orderDate: {
                         $gte: thisMonthStart,
@@ -205,17 +204,36 @@ const loadSalesReport = async (req, res) => {
             startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
             endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
         }
+
+        var orderStatusFilter = { status: { $in: ["Processing", "Shipped", "Cancelled", "Delivered"] } };
+        // Check if order status is provided in the request
+        if (req.body.status) {
+            if (req.body.status === "Cancelled") {
+                orderStatusFilter = { "products.isCancelled": true };
+            } else if (req.body.status === "Returned") {
+                orderStatusFilter = { "products.returnRequested": "Completed" };
+            } else {
+                orderStatusFilter = {
+                    status: req.body.status,
+                    "products.isCancelled": { $ne: true },
+                    "products.returnRequested": { $ne: "Completed" },
+                };
+            }
+        }
+
         const filteredOrders = await Order.aggregate([
+            {
+                $unwind: "$products" // Unwind the products array
+            },
             {
                 $match: {
                     orderDate: {
                         $gte: startOfMonth,
                         $lte: endOfMonth
-                    }
-                }
-            },
-            {
-                $unwind: "$products" // Unwind the products array
+                    },
+                    ...orderStatusFilter
+                },
+                // Use the complete orderStatusFilter object
             },
             {
                 $lookup: {
@@ -230,11 +248,6 @@ const loadSalesReport = async (req, res) => {
                     "products.productInfo": {
                         $arrayElemAt: ["$productInfo", 0] // Get the first (and only) element of the "productInfo" array
                     }
-                }
-            },
-            {
-                $match: {
-                    "products.returnRequested": { $in: ["Nil", "Rejected"] }
                 }
             },
             {
@@ -267,68 +280,21 @@ const loadSalesReport = async (req, res) => {
             }
         ]);
 
+        let orderDone = 0
+        let totalRevenue = 0
+        for(let i=0; i<filteredOrders.length; i++){
+            if(filteredOrders[i].status === "Delivered" && filteredOrders[i].products.returnRequested !== "Completed") {
+                orderDone += 1
+                totalRevenue += filteredOrders[i].products.total
+            }
+        }
+
         res.render('admin/salesReport', {
             salesReport: filteredOrders,
             activePage: 'salesReport',
+            orderDone,
+            totalRevenue
         });
-    } catch (error) {
-        res.render("error/internalError", { error })
-    }
-};
-
-const downloadSalesReport = (req, res) => {
-    try {
-        const salesReport = JSON.parse(req.query.salesReport);
-        // Create a new PDF document
-        const doc = new PDFDocument();
-
-        // Set the PDF response headers
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
-
-        // Pipe the PDF document to the response
-        doc.pipe(res);
-
-        // Add content to the PDF
-        doc.fontSize(16).text('Sales Report', { align: 'center' });
-        doc.moveDown();
-        doc.fontSize(12);
-
-        let count = 1
-
-        // Iterate over the salesReport data and add it to the PDF
-        salesReport.forEach((report) => {
-            const orderDate = new Date(report.orderDate).toLocaleDateString('en-US');
-            const deliveryDate = new Date(report.deliveryDate).toLocaleDateString('en-US');
-            doc.text(`${count++}.`);
-            doc.text(`User: ${report.userInfo.username}`);
-            doc.text(`Email: ${report.userInfo.email}`);
-            doc.text(`Phone: ${report.userInfo.mobile}`);
-            doc.moveDown();
-
-            // Iterate over the products for each report
-            doc.text(`Product Name: ${report.products.productInfo.name}`);
-            doc.text(`Price: ${report.products.total}`);
-            doc.text(`Quantity: ${report.products.quantity}`);
-            doc.text(`Payment Method: ${report.paymentMethod}`);
-            doc.moveDown();
-
-            doc.text(`Order Date: ${orderDate}`);
-            doc.text(`Delivery Date: ${deliveryDate}`);
-            doc.text(`Delivery Address: ${report.deliveryAddress.state}, ${report.deliveryAddress.district}, ${report.deliveryAddress.city}`);
-            doc.text(`Pincode: ${report.deliveryAddress.pincode}`);
-            doc.moveDown();
-            doc.moveDown();
-        });
-
-        // Add total statistics
-        doc.text(`Total orders done: ${salesReport.length}`);
-        doc.text(`Total products sold: ${req.query.productsCount}`);
-        doc.text(`Total Revenue: ${req.query.revenue}`);
-        doc.moveDown();
-
-        // Finalize and end the PDF document
-        doc.end();
     } catch (error) {
         res.render("error/internalError", { error })
     }
@@ -348,6 +314,5 @@ const error = async (req, res) => {
 module.exports = {
     loadDashboard,
     loadSalesReport,
-    downloadSalesReport,
     error
 }

@@ -1,103 +1,126 @@
 <%- include('../partials/adminHeader') %>
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <div class="card">
-        <div class="card-body">
-          <h4 class="card-title">Sales Report</h4>
-          <form action="/admin/sales-report?filtered=true" method="post">
-            <input class="m-1" type="date" name="from">
-            <input class="m-1" type="date" name="upto">
-            <button class="btn btn-outline-primary btn-sm m-1" type="submit">Apply</button>
-          </form>
-          <div class="table-responsive">
-            <% let productsCount = 0 %>
-            <% let totalRevenue = 0 %>
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>
-                    User
-                  </th>
-                  <th>
-                    Delivery Address
-                  </th>
-                  <th>
-                    Order Details
-                  </th>
-                  <th>
-                    Order Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <% if (!salesReport.length) { %>
-                <tr>
-                  <td colspan="6">
-                    No data found.
-                  </td>
-                </tr>
-                <% } else { %>
-                <% salesReport.forEach((report) => { %>
-                <tr class=" border-bottom">
-                  <td>
-                    <%= report.userInfo.username %><br>
-                    <p class="text-dark"><%= report.userInfo.email %></p><br>
-                    <%= report.userInfo.phone %>
-                  </td>
-                  <td>
-                    <%= report.deliveryAddress.state %>,
-                    <%= report.deliveryAddress.city %><br>
-                    <%= report.deliveryAddress.area %>,
-                    Pincode: <%= report.deliveryAddress.pincode %><br>
-                    House No.: <%= report.deliveryAddress.building %>
-                  </td>
-                  <td>
-                    <div>
-                      <% productsCount += 1 %>
-                      <div class="border-bottom mb-3">
-                        <span class="text-primary h6 text-uppercase">
-                          <%= report.products.productInfo.name %>
-                        </span><br>
-                        Price: <%= report.products.total %>,
-                        Quantity: <%= report.products.quantity %>
-                        <% totalRevenue += (report.products.productInfo.price * report.products.quantity) %>
-                      </div>
-                      <span>
-                        <strong>
-                          Payment Method: <%= report.paymentMethod %>
-                        </strong>
-                      </span>
-                  </td>
-                  <td>
-                    Order Confirmed, <%= report.orderDate.toLocaleDateString() %><br>
-                    Delivery, <%= report.deliveryDate.toLocaleDateString() %>
-                  </td>
-                </tr>
-                <% }) %>
-                <% } %>
-              </tbody>
-            </table>
-            <div class="d-flex">
-              <div class="col-md-9 col-12 pt-3">
-                Total orders done: <%= salesReport.length %><br>
-                Total products sold: <%= productsCount %><br>
-                <strong>Total Revenue: ₹<%= totalRevenue.toFixed(2) %></strong>
-              </div>
-              <% if (salesReport.length) { %>
-                <div class="col-md-3 col-12 p-4">
-                  <a href="/admin/download-report?salesReport=<%= JSON.stringify(salesReport) %>&&productsCount=<%= productsCount %>&&revenue=<%= totalRevenue %>" class="btn btn-primary btn-sm">
-                    <i class="fa-solid fa-download"></i>
-                  </a>
-                </div>
-              <% } %>
-            </div>
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Sales Report</h4>
+      <form action="/admin/sales-report?filtered=true" method="post">
+        <span class="fw-bold">From</span>
+        <input class="m-1" type="date" name="from">
+        <span class="fw-bold">To</span>
+        <input class="m-1" type="date" name="upto">
+
+        <button class="btn btn-outline-primary btn-sm m-1" type="submit">Apply date</button>
+      </form>
+      <form action="/admin/sales-report" method="post">
+
+        <div class="row d-flex mt-2 mb-2">
+          <!-- Add a new input for order status -->
+          <div class="col-md-11">
+            <select class="form-select col-10" name="status">
+
+              <option value="">Order Status Filter All</option>
+              <option value="Processing">Processing</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Returned">Returned</option>
+
+              <!-- Add more options as needed -->
+            </select>
+          </div>
+
+          <div class="col-md-1">
+            <button class="btn btn-outline-primary btn-sm" style="height: 38px;" type="submit">Apply</button>
+          </div>
+        </div>
+
+      </form>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>
+                User
+              </th>
+              <th>
+                Delivery Address
+              </th>
+              <th>
+                Order Details
+              </th>
+              <th>
+                Order Date
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!salesReport.length) { %>
+            <tr>
+              <td colspan="6">
+                No data found.
+              </td>
+            </tr>
+            <% } else { %>
+            <% salesReport.forEach((report) => { %>
+            <tr class=" border-bottom">
+              <td>
+                <%= report.userInfo.username %><br>
+                <p class="text-dark"><%= report.userInfo.email %></p><br>
+                <%= report.userInfo.phone %>
+              </td>
+              <td>
+                <%= report.deliveryAddress.state %>,
+                <%= report.deliveryAddress.city %><br>
+                <%= report.deliveryAddress.area %>,
+                Pincode: <%= report.deliveryAddress.pincode %><br>
+                House No.: <%= report.deliveryAddress.building %>
+              </td>
+              <td>
+                <div>
+                  <div class="border-bottom mb-3">
+                    <span class="text-primary h6 text-uppercase">
+                      <%= report.products.productInfo.name %>
+                    </span><br>
+                    Price: <%= report.products.total %>,
+                    Quantity: <%= report.products.quantity %>
+                  </div>
+                  <span>
+                    <strong>
+                      Payment Method: <%= report.paymentMethod %><br>
+                      Status:
+                      <% if (report.products.isCancelled) { %>
+                        Cancelled
+                      <% } else if (report.products.returnRequested === "Completed") { %>
+                        Returned
+                      <% } else { %>
+                        <%= report.status %>
+                      <% } %>
+                    </strong>
+                  </span>
+              </td>
+              <td>
+                Order Confirmed, <%= report.orderDate.toLocaleDateString() %><br>
+                Delivery, <%= report.deliveryDate.toLocaleDateString() %>
+              </td>
+            </tr>
+            <% }) %>
+            <% } %>
+          </tbody>
+        </table>
+        <div class="d-flex">
+          <div class="col-md-9 col-12 pt-3">
+            Total orders done: <%= orderDone %><br>
+            <strong>Total Revenue: ₹<%= totalRevenue %></strong>
           </div>
         </div>
       </div>
+    </div>
   </div>
-  <!-- / Content -->
+</div>
+<!-- / Content -->
 
-  <div class="content-backdrop fade"></div>
+<div class="content-backdrop fade"></div>
 </div>
 <!-- Content wrapper -->
 </div>
@@ -131,4 +154,5 @@
 <!-- Place this tag in your head or just before your close body tag. -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
+
 </html>
