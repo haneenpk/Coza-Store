@@ -1,5 +1,4 @@
 const Admin = require("../../models/adminModel")
-const bcrypt = require("bcrypt")
 
 
 const loadLogin = async (req, res) => {
@@ -24,9 +23,7 @@ const verifyLogin = async (req, res) => {
 
         if (adminData) {
 
-            const passwordMatch = await bcrypt.compare(password, adminData.password)
-
-            if (passwordMatch) {
+            if (password === adminData.password) {
                 req.session.adminid = adminData.id;
                 res.redirect("/admin/dashboard")
             } else {

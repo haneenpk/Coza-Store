@@ -87,7 +87,7 @@
 
               <a class="dropdown-item" href="/admin/edit-product?id=<%= products[i]._id %>"><i class="bx bx-edit-alt me-2"></i> Edit</a>
 
-              <a class="dropdown-item" href="/admin/delete-product?id=<%= products[i]._id %>"><i class="bx bx-trash me-2"></i> Delete</a>
+              <a class="dropdown-item" href="/admin/delete-product?id=<%= products[i]._id %>"></i> </a>
 
             </td>
           </tr>
@@ -153,6 +153,15 @@
 
 <!-- Place this tag in your head or just before your close body tag. -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Hide the loading spinner
+    document.getElementById("loading-spinner").style.display = "none";
+    // Display the content
+    document.getElementById("content").style.display = "block";
+  });
+</script>
+
 </body>
 
 </html>

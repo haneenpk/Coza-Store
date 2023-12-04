@@ -55,6 +55,26 @@
 
     <link rel="stylesheet" href="../assets/vendor/libs/apex-charts/apex-charts.css" />
 
+    <style>
+      #loading-spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20% auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#content {
+    display: none;
+}
+    </style>
     <!-- Page CSS -->
 
     <!-- Helpers -->
@@ -76,8 +96,9 @@
   </head>
 
   <body>
+    <div id="loading-spinner"></div>
     <!-- Layout wrapper -->
-    <div class="layout-wrapper layout-content-navbar">
+    <div class="layout-wrapper layout-content-navbar" id="content" style="display: none;">
       <div class="layout-container">
         <!-- Menu -->
 
@@ -400,6 +421,14 @@
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        // Hide the loading spinner
+        document.getElementById("loading-spinner").style.display = "none";
+        // Display the content
+        document.getElementById("content").style.display = "block";
+      });
+    </script>
     
   </body>
 </html>

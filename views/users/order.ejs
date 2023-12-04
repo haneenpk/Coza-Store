@@ -48,7 +48,7 @@
             </strong>
             <% } %>
             </p>
-            <% if (order.status === "Delivered" && order.products.returnRequested !== "Completed") { %>
+            <% if (order.status === "Delivered" && order.products.returnRequested !== "Completed" && order.products.isCancelled !== true) { %>
             <button type="button" class="btn btn-sm btn-outline-info mt-3" data-toggle="modal" data-target="#reviewModal" data-product-id="<%= order.orderedProducts[0]._id %>" data-initial-rating="<%= order.orderedProducts[0].initialRating %>">
               Review
             </button>
@@ -168,7 +168,7 @@
 
           <!-- Review Textarea -->
           <label for="review">Review:</label>
-          <textarea class="form-control" id="review" name="review" rows="3"></textarea>
+          <textarea class="form-control" id="review" name="review" rows="3" oninput="validateFeild(this)"></textarea>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Submit Review</button>
@@ -280,6 +280,16 @@
       }
       ratingDiv.append(star);
     }
+  }
+</script>
+
+<script>
+  function validateFeild(input) {
+    // Remove spaces at the beginning
+    input.value = input.value.replace(/^\s+/g, '');
+
+    // Allow only letters, commas, and full stops
+    input.value = input.value.replace(/[^A-Za-z0-9,.\s]/g, '');
   }
 </script>
 

@@ -21,7 +21,7 @@
                     <% } %>
                     <label class="col-form-label" for="profile-picture" style="margin-top: 20px;">Change Profile</label>
                     <form action="/profile/editPhoto?_method=PATCH" method="post" enctype="multipart/form-data">
-                      <input type="file" accept="image/*" name="image" class="form-control file-upload-info" placeholder="Upload Image" id="preview-input" />
+                      <input type="file" accept="image/*" name="image" class="form-control file-upload-info" placeholder="Upload Image" id="preview-input" required/>
                       <button type="submit" class="btn btn-primary profile-button" style="margin-top: 15px;">Update profile</button><br>
                     </form>
                     <% if(typeof error !== "undefined"){ %>

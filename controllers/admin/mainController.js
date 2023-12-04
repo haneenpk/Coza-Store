@@ -283,7 +283,7 @@ const loadSalesReport = async (req, res) => {
         let orderDone = 0
         let totalRevenue = 0
         for(let i=0; i<filteredOrders.length; i++){
-            if(filteredOrders[i].status === "Delivered" && filteredOrders[i].products.returnRequested !== "Completed") {
+            if(filteredOrders[i].status === "Delivered" && filteredOrders[i].products.returnRequested !== "Completed" && filteredOrders[i].products.isCancelled !== true) {
                 orderDone += 1
                 totalRevenue += filteredOrders[i].products.total
             }
