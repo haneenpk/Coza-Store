@@ -4,7 +4,7 @@ const mongoose = require("mongoose")
 const noCache = require('nocache');
 const methodOveride = require('method-override')
 
-mongoose.connect("mongodb://127.0.0.1:27017/project1");
+mongoose.connect(process.env.MONGODB_URL);
 
 const express = require("express")
 const app = express()
