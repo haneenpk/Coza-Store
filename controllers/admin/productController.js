@@ -85,7 +85,7 @@ const AddProduct = async (req, res) => {
             return res.render("./admin/add-product", { activePage: "product", categories, error: "Product name should be filled" })
         }
 
-        const existingProduct = await Category.findOne({ name: req.body.name })
+        const existingProduct = await Product.findOne({ name: req.body.name })
 
         if (existingProduct) return res.render("./admin/add-product", { activePage: "product", categories, error: "Product name already existed" })
 
