@@ -21,13 +21,15 @@ const verifyLogin = async (req, res) => {
 
         const adminData = await Admin.findOne({ name: username })
 
+        console.log(adminData)
+
         if (adminData) {
 
             if (password === adminData.password) {
                 req.session.adminid = adminData.id;
                 res.redirect("/admin/dashboard")
             } else {
-                res.render("admin/login", { message: "Username and password is incorrect" })
+                res.render("admin/login", { message: "Password is incorrect" })
             }
 
         } else {
